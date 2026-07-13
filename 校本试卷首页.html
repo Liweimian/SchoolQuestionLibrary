@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>朝阳实验中学校本库 · 试卷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --brand: #1a5fb4;
+    --brand-deep: #134a8e;
+    --brand-soft: #eef3f9;
+    --ink: #1c1f23;
+    --ink-2: #4b5563;
+    --ink-3: #8b939e;
+    --line: #e8eaed;
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --shadow: 0 1px 2px rgba(0,0,0,.03);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink); background: var(--bg); font-size: 14px; line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; border: none; background: none; }
+  .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    height: 58px; background: #fff; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; padding: 0 20px; gap: 28px; flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: var(--brand);
+    display: grid; place-items: center; color: #fff;
+    font-size: 13px; font-weight: 800; letter-spacing: -.5px;
+  }
+  .brand-text { display: flex; flex-direction: column; gap: 1px; line-height: 1.2; }
+  .brand-text .school { font-size: 15px; font-weight: 800; }
+  .brand-text .product { font-size: 11px; color: var(--ink-3); font-weight: 500; }
+  .nav { display: flex; gap: 2px; }
+  .nav a { padding: 8px 14px; border-radius: 6px; color: var(--ink-2); font-weight: 500; }
+  .nav a.active { color: var(--brand); background: var(--brand-soft); font-weight: 600; }
+  .top-right { margin-left: auto; display: flex; align-items: center; gap: 16px; color: var(--ink-2); font-size: 13px; }
+  .semester {
+    color: var(--ink-3); font-size: 12px;
+    padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px;
+  }
+
+  .subnav {
+    background: #fff; border-bottom: 1px solid var(--line);
+    padding: 0 20px; display: flex; align-items: center; gap: 2px; height: 44px; flex-shrink: 0;
+  }
+  .subnav .tab {
+    padding: 10px 14px; color: var(--ink-2); font-weight: 500; position: relative; font-size: 13px;
+  }
+  .subnav .tab.active { color: var(--brand); font-weight: 600; }
+  .subnav .tab.active::after {
+    content: ""; position: absolute; left: 14px; right: 14px; bottom: 0;
+    height: 2px; background: var(--brand);
+  }
+  .subnav .meta { margin-left: auto; }
+  .link-q { color: var(--brand); font-weight: 600; font-size: 13px; padding: 5px 10px; }
+
+  .banner {
+    margin: 12px 20px 0;
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 18px; display: flex; align-items: center; gap: 24px;
+  }
+  .banner-title { min-width: 220px; }
+  .banner-title h1 { margin: 0; font-size: 16px; font-weight: 800; }
+  .banner-title p { margin: 2px 0 0; font-size: 12px; color: var(--ink-3); }
+  .banner-stats { display: flex; flex: 1; }
+  .bstat { flex: 1; padding: 0 20px; border-left: 1px solid var(--line); }
+  .bstat .k { font-size: 12px; color: var(--ink-3); }
+  .bstat .v { font-size: 20px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .bstat .s { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+
+  .ingest {
+    margin: 10px 20px 0; background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 16px; display: flex; align-items: center; gap: 14px;
+  }
+  .ingest-icon {
+    width: 40px; height: 40px; border-radius: 8px; background: var(--brand-soft); color: var(--brand);
+    display: grid; place-items: center; font-weight: 800; font-size: 12px; flex-shrink: 0;
+  }
+  .ingest .txt { flex: 1; }
+  .ingest .txt strong { display: block; font-size: 13px; margin-bottom: 2px; }
+  .ingest .txt span { font-size: 12px; color: var(--ink-3); }
+  .btn-ingest {
+    background: var(--brand); color: #fff; padding: 8px 14px; border-radius: 8px;
+    font-weight: 600; font-size: 13px; white-space: nowrap;
+  }
+  .btn-ingest:hover { background: var(--brand-deep); }
+
+  .layout {
+    flex: 1; display: grid; grid-template-columns: 1fr minmax(340px, 400px);
+    gap: 12px; padding: 12px 20px 20px; min-height: 0;
+  }
+  .panel {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; min-height: 0;
+  }
+
+  .source-tabs {
+    display: flex; border-bottom: 1px solid var(--line); background: #fafbfc;
+  }
+  .source-tabs button {
+    flex: 1; padding: 11px; font-weight: 600; color: var(--ink-2); font-size: 13px;
+    border-bottom: 2px solid transparent;
+  }
+  .source-tabs button.on { color: var(--brand); border-bottom-color: var(--brand); background: #fff; }
+  .source-tabs .count {
+    margin-left: 4px; font-size: 11px; color: var(--ink-3); font-weight: 500;
+  }
+  .source-tabs button.on .count { color: var(--brand); }
+
+  .toolbar {
+    padding: 10px 14px; border-bottom: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+  }
+  .fg { display: flex; align-items: center; gap: 4px; color: var(--ink-3); font-size: 12px; }
+  .chip { padding: 3px 9px; border-radius: 4px; color: var(--ink-2); font-size: 12px; }
+  .chip.on { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+  .search {
+    margin-left: auto; display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; min-width: 200px;
+  }
+  .search input { border: none; outline: none; width: 100%; font: inherit; font-size: 13px; }
+
+  .plist { flex: 1; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .pcard {
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 12px;
+    cursor: pointer; transition: border-color .15s, box-shadow .15s;
+  }
+  .pcard:hover, .pcard.active { border-color: #c5d0de; }
+  .pcard.active {
+    background: #fafbfd; border-color: var(--brand);
+    box-shadow: 0 0 0 1px rgba(26,95,180,.12);
+  }
+  .p-hd { display: flex; align-items: flex-start; gap: 12px; }
+  .p-hd-main { flex: 1; min-width: 0; }
+  .p-title { font-size: 14px; font-weight: 700; margin: 0 0 6px; line-height: 1.45; }
+  .p-meta {
+    display: flex; flex-wrap: wrap; gap: 0;
+    font-size: 12px; color: var(--ink-3);
+  }
+  .p-meta span + span::before { content: "·"; margin: 0 8px; color: var(--line); }
+  .p-type {
+    flex-shrink: 0; padding: 3px 8px; border-radius: 4px;
+    background: var(--brand-soft); color: var(--brand);
+    font-size: 11px; font-weight: 700;
+  }
+  .p-xueqing {
+    border: 1px solid #d6e4f5; border-radius: 8px; padding: 10px 12px;
+    background: linear-gradient(180deg, #f7fbff 0%, #fff 100%);
+  }
+  .p-xq-hd {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    font-size: 12px; font-weight: 700; color: var(--brand-deep);
+  }
+  .p-xq-hd .badge {
+    padding: 1px 6px; border-radius: 3px; background: var(--brand); color: #fff;
+    font-size: 10px; font-weight: 700;
+  }
+  .p-xq-hd .weak {
+    margin-left: auto; font-weight: 600; color: #a15c00; font-size: 12px;
+  }
+  .p-metrics {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px;
+  }
+  .pm {
+    background: #fff; border: 1px solid #e8eef6; border-radius: 6px;
+    padding: 8px 6px; text-align: center;
+  }
+  .pm .k { font-size: 11px; color: var(--ink-3); }
+  .pm .v {
+    font-size: 16px; font-weight: 700; margin-top: 2px;
+    font-variant-numeric: tabular-nums; color: var(--ink);
+  }
+  .pm.highlight .v { color: var(--brand); }
+  .p-actions {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--brand); color: #fff; padding: 7px 14px; border-radius: 6px;
+    font-weight: 600; font-size: 12px; text-align: center;
+  }
+  .btn-primary:hover { background: var(--brand-deep); }
+  .btn-ghost {
+    border: 1px solid var(--line); padding: 6px 12px; border-radius: 6px;
+    color: var(--ink-2); font-size: 12px; text-align: center; background: #fff;
+  }
+  .btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
+  .p-actions .hint {
+    margin-left: auto; font-size: 12px; color: var(--ink-3);
+  }
+
+  .detail-hd { padding: 14px 16px; border-bottom: 1px solid var(--line); background: #f7fbff; }
+  .detail-hd h2 { margin: 0 0 4px; font-size: 15px; font-weight: 800; line-height: 1.4; }
+  .detail-hd .sub { font-size: 12px; color: var(--ink-3); }
+  .detail-hd .xq-label {
+    display: inline-block; margin-bottom: 6px;
+    padding: 2px 8px; border-radius: 4px; background: var(--brand); color: #fff;
+    font-size: 11px; font-weight: 700;
+  }
+  .detail-body { flex: 1; overflow: auto; padding: 14px 16px; }
+  .sec-title {
+    font-size: 12px; font-weight: 700; margin: 0 0 10px;
+    display: flex; align-items: center;
+  }
+  .sec-title .hint { margin-left: auto; font-weight: 400; color: var(--ink-3); }
+
+  .year-compare { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+  .yc { border-radius: 8px; padding: 10px; background: #f7f8fa; text-align: center; }
+  .yc.cur { background: var(--brand-soft); }
+  .yc .y { font-size: 11px; color: var(--ink-3); }
+  .yc .avg { font-size: 18px; font-weight: 700; margin: 4px 0; font-variant-numeric: tabular-nums; }
+  .yc .delta { font-size: 11px; color: var(--ink-3); }
+
+  .chapter-bars { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .cbar {
+    display: grid; grid-template-columns: 84px 1fr 36px; gap: 8px;
+    align-items: center; font-size: 12px; color: var(--ink-2);
+  }
+  .cbar .track { height: 4px; background: #eceef1; border-radius: 99px; overflow: hidden; }
+  .cbar .track span { display: block; height: 100%; background: var(--brand); opacity: .65; border-radius: 99px; }
+  .cbar .pct { text-align: right; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+  .level-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+  .lb { border-radius: 8px; padding: 10px; text-align: center; background: #f7f8fa; }
+  .lb .n { font-size: 11px; color: var(--ink-3); }
+  .lb .v { font-size: 16px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+  .note-box {
+    background: #f7f8fa; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+    font-size: 12px; color: var(--ink-2); line-height: 1.65;
+  }
+
+  .err-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .err-item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .err-item .t { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .err-item .d { font-size: 12px; color: var(--ink-2); }
+  .err-item .meta { margin-top: 6px; font-size: 11px; color: var(--ink-3); }
+
+  .qm {
+    padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12px;
+  }
+  .qm:last-child { border-bottom: none; }
+  .qm .row { display: flex; gap: 10px; align-items: center; margin-bottom: 4px; color: var(--ink-3); }
+  .qm .row .rate { margin-left: auto; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .qm .stem { color: var(--ink); line-height: 1.5; }
+  .qm .stats { color: var(--ink-3); margin-top: 4px; }
+  .qm .stats a { color: var(--brand); font-weight: 600; }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; }
+    .detail { display: none; }
+    .p-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .p-actions .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">朝实</div>
+      <div class="brand-text">
+        <span class="school">朝阳实验中学校本库</span>
+        <span class="product">沉淀本校学情，驱动精准教学</span>
+      </div>
+    </div>
+    <div class="top-right">
+      <span class="semester">2025–2026 学年 · 秋季学期</span>
+      <span>初中数学</span>
+      <span>李老师</span>
+    </div>
+  </header>
+
+  <div class="subnav">
+    <a class="tab" href="校本题库首页.html">教材/知识点选题</a>
+    <a class="tab active" href="校本试卷首页.html">试卷</a>
+    <a class="tab" href="#">我的</a>
+    <div class="meta"><a class="link-q" href="校本题库首页.html">← 选题组卷</a></div>
+  </div>
+
+  <section class="banner">
+    <div class="banner-title">
+      <h1>近3年试卷</h1>
+      <p>本校历年考试沉淀 + 高扫 AI 录题，三年学情可追溯</p>
+    </div>
+    <div class="banner-stats">
+      <div class="bstat">
+        <div class="k">校本试卷</div>
+        <div class="v">386</div>
+        <div class="s">考试录题 118 · 练习沉淀 268</div>
+      </div>
+      <div class="bstat">
+        <div class="k">近三年覆盖考试</div>
+        <div class="v">42 场</div>
+        <div class="s">期中 / 期末 / 月考</div>
+      </div>
+      <div class="bstat">
+        <div class="k">本校卷均分</div>
+        <div class="v">78.6</div>
+        <div class="s">较区平均 +2.1</div>
+      </div>
+      <div class="bstat">
+        <div class="k">高扫录题完整率</div>
+        <div class="v">99.2%</div>
+        <div class="s">结构化自动入库</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ingest">
+    <div class="ingest-icon">入库</div>
+    <div class="txt">
+      <strong>上传题目答案文件，AI 智能一键入库</strong>
+      <span>支持 PDF、DOCX，单文件限 20M 内。自动识别题型、分值、知识点，并回写作答分布、典型错因与分层表现。</span>
+    </div>
+    <button class="btn-ingest" type="button" id="btnIngest">上传文件 · 一键入库</button>
+    <input type="file" id="ingestFile" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+  </div>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="source-tabs">
+        <button class="on" data-src="all">全部 <span class="count">386</span></button>
+        <button data-src="exam">本校考试录题 <span class="count">118</span></button>
+        <button data-src="bank">校本精选卷 <span class="count">268</span></button>
+      </div>
+      <div class="toolbar">
+        <div class="fg">年级
+          <button class="chip on">全部</button>
+          <button class="chip">七上</button>
+          <button class="chip">七下</button>
+          <button class="chip">八上</button>
+        </div>
+        <div class="fg">类型
+          <button class="chip on">全部</button>
+          <button class="chip">期末</button>
+          <button class="chip">期中</button>
+          <button class="chip">月考</button>
+        </div>
+        <div class="search">
+          <span style="color:var(--ink-3)">⌕</span>
+          <input placeholder="搜索试卷 / 知识点" />
+        </div>
+      </div>
+      <div class="plist" id="plist"></div>
+    </section>
+
+    <aside class="panel detail">
+      <div class="detail-hd">
+        <span class="xq-label">本卷详细学情</span>
+        <h2 id="d-title">2025-2026 本校七年级上期末考试</h2>
+        <div class="sub" id="d-sub">本校考试高扫录题 · 作答 486 人</div>
+      </div>
+      <div class="detail-body" id="d-body"></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const papers = [
+  {
+    id: 1,
+    src: "exam",
+    title: "2025-2026学年 本校七年级上学期期末考试：数学",
+    type: "期末",
+    year: "2025-2026",
+    grade: "七上",
+    season: "秋",
+    origin: "本校考试 · 高扫入库",
+    people: 486,
+    avg: 76.8,
+    scoreRate: 76.8,
+    correct: 68.2,
+    disc: 0.43,
+    weak: "一元一次方程应用",
+    chapters: [
+      { name: "有理数", rate: 82 },
+      { name: "有理数运算", rate: 78 },
+      { name: "代数式", rate: 62 },
+      { name: "整式加减", rate: 71 },
+      { name: "一元一次方程", rate: 54 },
+      { name: "几何初步", rate: 61 }
+    ],
+    years: [
+      { y: "23 秋", avg: 72.4, delta: "—" },
+      { y: "24 秋", avg: 74.9, delta: "+2.5" },
+      { y: "25 秋", avg: 76.8, delta: "+1.9", cur: true }
+    ],
+    errors: [
+      { t: "方程建模左右量纲不一致", d: "应用题第19题，42%学生设未知数后等式两边意义不匹配。", meta: "失分贡献 18%" },
+      { t: "代数式代入符号变号失误", d: "填空第8题，负底数平方与乘积符号混淆。", meta: "失分贡献 14%" },
+      { t: "角的动态旋转漏分情况", d: "解答第22题只写一侧情形，漏「下方」分支。", meta: "失分贡献 11%" }
+    ],
+    levels: { base: 81, up: 64, top: 39 },
+    questions: [
+      { no: 8, stem: "当 a=−2，b=3 时，2a²−3ab+b² 的值为 ____", correct: 52, level: "提高层" },
+      { no: 15, stem: "以绳测井……可列方程为（　）", correct: 41, level: "冲刺层" },
+      { no: 22, stem: "射线旋转与角平分线综合（解答题）", correct: 55, level: "提高层" }
+    ],
+    note: "本卷由高扫仪扫描后自动拆题、挂知识点、回写作答分布。教师复核约 6 分钟完成。"
+  },
+  {
+    id: 2,
+    src: "exam",
+    title: "2025-2026学年 本校七年级上学期期中考试：数学",
+    type: "期中",
+    year: "2025-2026",
+    grade: "七上",
+    season: "秋",
+    origin: "本校考试 · 高扫入库",
+    people: 492,
+    avg: 81.2,
+    scoreRate: 81.2,
+    correct: 74.5,
+    disc: 0.38,
+    weak: "去括号变号",
+    chapters: [
+      { name: "有理数", rate: 88 },
+      { name: "有理数运算", rate: 80 },
+      { name: "代数式", rate: 66 },
+      { name: "整式加减", rate: 69 }
+    ],
+    years: [
+      { y: "23 秋", avg: 78.1, delta: "—" },
+      { y: "24 秋", avg: 79.6, delta: "+1.5" },
+      { y: "25 秋", avg: 81.2, delta: "+1.6", cur: true }
+    ],
+    errors: [
+      { t: "去括号变号遗漏", d: "计算题连续去括号时只变一项。", meta: "失分贡献 16%" },
+      { t: "科学记数法指数写错", d: "把 10 的幂次多写 / 少写一位。", meta: "失分贡献 9%" }
+    ],
+    levels: { base: 88, up: 72, top: 48 },
+    questions: [
+      { no: 6, stem: "合并同类项 3x²−5x+2−7x²+4x−9", correct: 78, level: "基础层" },
+      { no: 12, stem: "去括号化简并求值", correct: 61, level: "提高层" }
+    ],
+    note: "期中卷入库后已同步至章节学情，可一键生成错因回炉题单。"
+  },
+  {
+    id: 3,
+    src: "bank",
+    title: "2024-2025学年 朝阳区七年级上学期期末考试：数学",
+    type: "期末",
+    year: "2024-2025",
+    grade: "七上",
+    season: "秋",
+    origin: "校本精选 · 区域卷沉淀",
+    people: 486,
+    avg: 74.2,
+    scoreRate: 74.2,
+    correct: 66.8,
+    disc: 0.44,
+    weak: "代数式的值",
+    chapters: [
+      { name: "有理数", rate: 80 },
+      { name: "有理数运算", rate: 75 },
+      { name: "代数式", rate: 58 },
+      { name: "整式加减", rate: 68 },
+      { name: "一元一次方程", rate: 52 },
+      { name: "几何初步", rate: 60 }
+    ],
+    years: [
+      { y: "23 秋", avg: 71.0, delta: "—" },
+      { y: "24 秋", avg: 74.2, delta: "+3.2", cur: true },
+      { y: "区平均", avg: 76.5, delta: "本校 −2.3" }
+    ],
+    errors: [
+      { t: "代数式代入运算失误", d: "负号与乘方优先级混淆。", meta: "本校薄弱点一致" },
+      { t: "方程应用题建模偏差", d: "和差倍分关系列式错误。", meta: "与近两届期末同源" }
+    ],
+    levels: { base: 79, up: 61, top: 36 },
+    questions: [
+      { no: 7, stem: "代数式求值综合", correct: 55, level: "提高层" },
+      { no: 18, stem: "一元一次方程实际问题", correct: 48, level: "提高层" }
+    ],
+    note: "区域卷已对齐本校同知识点历史表现，便于对照组卷难度。"
+  },
+  {
+    id: 4,
+    src: "exam",
+    title: "2024-2025学年 本校七年级上 11月月考：数学",
+    type: "月考",
+    year: "2024-2025",
+    grade: "七上",
+    season: "秋",
+    origin: "本校考试 · 高扫入库",
+    people: 478,
+    avg: 83.5,
+    scoreRate: 83.5,
+    correct: 77.2,
+    disc: 0.33,
+    weak: "科学记数法",
+    chapters: [
+      { name: "有理数", rate: 90 },
+      { name: "有理数运算", rate: 84 },
+      { name: "代数式", rate: 70 }
+    ],
+    years: [
+      { y: "上月", avg: 81.0, delta: "—" },
+      { y: "本月", avg: 83.5, delta: "+2.5", cur: true },
+      { y: "班级最高", avg: 91.2, delta: "—" }
+    ],
+    errors: [
+      { t: "科学记数法数量级偏差", d: "天文数据题把指数写错一位。", meta: "基础层以外亦有失误" }
+    ],
+    levels: { base: 91, up: 78, top: 55 },
+    questions: [
+      { no: 5, stem: "用科学记数法表示较大数", correct: 69, level: "基础层" }
+    ],
+    note: "月考高扫入库后约 2 小时完成学情挂载，当晚即可按错因布置作业。"
+  },
+  {
+    id: 5,
+    src: "bank",
+    title: "2023-2024学年 本校七年级上学期期末考试：数学",
+    type: "期末",
+    year: "2023-2024",
+    grade: "七上",
+    season: "秋",
+    origin: "本校历年试卷沉淀",
+    people: 462,
+    avg: 72.4,
+    scoreRate: 72.4,
+    correct: 64.1,
+    disc: 0.42,
+    weak: "几何图形初步",
+    chapters: [
+      { name: "有理数", rate: 78 },
+      { name: "有理数运算", rate: 74 },
+      { name: "代数式", rate: 58 },
+      { name: "整式加减", rate: 66 },
+      { name: "一元一次方程", rate: 50 },
+      { name: "几何初步", rate: 55 }
+    ],
+    years: [
+      { y: "23 秋", avg: 72.4, delta: "—", cur: true },
+      { y: "24 秋", avg: 74.9, delta: "+2.5" },
+      { y: "25 秋", avg: 76.8, delta: "+1.9" }
+    ],
+    errors: [
+      { t: "角的计算漏辅助线", d: "几何综合题作图不完整。", meta: "届届复现的薄弱点" }
+    ],
+    levels: { base: 76, up: 58, top: 32 },
+    questions: [
+      { no: 20, stem: "角平分线相关计算", correct: 51, level: "提高层" }
+    ],
+    note: "历年本校期末卷，可与本届对照看三年进步轨迹。"
+  },
+  {
+    id: 6,
+    src: "bank",
+    title: "2024-2025学年 朝阳区陈经纶中学七年级上期中：数学",
+    type: "期中",
+    year: "2024-2025",
+    grade: "七上",
+    season: "秋",
+    origin: "校本精选 · 名校卷沉淀",
+    people: 860,
+    avg: 80.6,
+    scoreRate: 80.6,
+    correct: 73.0,
+    disc: 0.40,
+    weak: "整式加减综合",
+    chapters: [
+      { name: "有理数", rate: 85 },
+      { name: "有理数运算", rate: 79 },
+      { name: "代数式", rate: 68 },
+      { name: "整式加减", rate: 64 }
+    ],
+    years: [
+      { y: "名校卷", avg: 80.6, delta: "—", cur: true },
+      { y: "本校同知识点", avg: 74.2, delta: "−6.4" },
+      { y: "建议使用", avg: "提高层", delta: "—" }
+    ],
+    errors: [
+      { t: "整式加减符号连续运算失误", d: "多项合并时符号传递错误。", meta: "适合提高层加练" }
+    ],
+    levels: { base: 70, up: 58, top: 42 },
+    questions: [
+      { no: 11, stem: "整式加减综合化简", correct: 57, level: "提高层" }
+    ],
+    note: "已标注本校同知识点历史表现，避免过难挫伤基础层。"
+  }
+];
+
+function renderPapers(src = "all") {
+  const list = document.getElementById("plist");
+  const data = src === "all" ? papers : papers.filter(p => p.src === src);
+  list.innerHTML = data.map((p, i) => `
+    <article class="pcard ${i === 0 ? "active" : ""}" data-id="${p.id}">
+      <div class="p-hd">
+        <div class="p-hd-main">
+          <h3 class="p-title">${p.title}</h3>
+          <div class="p-meta">
+            <span>${p.origin}</span>
+            <span>${p.grade}</span>
+            <span>${p.year}</span>
+            <span>作答 ${p.people.toLocaleString()} 人</span>
+          </div>
+        </div>
+        <span class="p-type">${p.type}</span>
+      </div>
+      <div class="p-xueqing">
+        <div class="p-xq-hd">
+          <span class="badge">学情</span>
+          <span>本卷学情快览</span>
+          <span class="weak">薄弱点：${p.weak}</span>
+        </div>
+        <div class="p-metrics">
+          <div class="pm highlight"><div class="k">均分</div><div class="v">${p.avg}</div></div>
+          <div class="pm"><div class="k">得分率</div><div class="v">${p.scoreRate}%</div></div>
+          <div class="pm highlight"><div class="k">正确率</div><div class="v">${p.correct}%</div></div>
+          <div class="pm"><div class="k">区分度</div><div class="v">${p.disc}</div></div>
+          <div class="pm"><div class="k">作答人数</div><div class="v">${p.people.toLocaleString()}</div></div>
+        </div>
+      </div>
+      <div class="p-actions">
+        <button class="btn-primary" type="button">查看详细学情</button>
+        <button class="btn-ghost" type="button">整套编辑</button>
+        <button class="btn-ghost" type="button">添加全部</button>
+        <span class="hint">点击卡片可在右侧展开章节/错因</span>
+      </div>
+    </article>
+  `).join("");
+
+  list.querySelectorAll(".pcard").forEach(card => {
+    card.addEventListener("click", () => {
+      list.querySelectorAll(".pcard").forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+      renderDetail(papers.find(p => p.id === Number(card.dataset.id)));
+    });
+  });
+
+  if (data[0]) renderDetail(data[0]);
+}
+
+function renderDetail(p) {
+  document.getElementById("d-title").textContent = p.title;
+  document.getElementById("d-sub").textContent =
+    `${p.origin} · ${p.year} · 作答 ${p.people.toLocaleString()} 人`;
+
+  document.getElementById("d-body").innerHTML = `
+    <div class="sec-title">近 3 年对照<span class="hint">仅${p.season}季学期</span></div>
+    <div class="year-compare">
+      ${p.years.map(y => `
+        <div class="yc ${y.cur ? "cur" : ""}">
+          <div class="y">${y.y}</div>
+          <div class="avg">${y.avg}</div>
+          <div class="delta">${y.delta}</div>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="sec-title">章节得分率<span class="hint">章节维度</span></div>
+    <div class="chapter-bars">
+      ${p.chapters.map(c => `
+        <div class="cbar">
+          <span>${c.name}</span>
+          <div class="track"><span style="width:${c.rate}%"></span></div>
+          <span class="pct">${c.rate}%</span>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="sec-title">适用层次</div>
+    <div class="level-box">
+      <div class="lb"><div class="n">基础层</div><div class="v">${p.levels.base}%</div></div>
+      <div class="lb"><div class="n">提高层</div><div class="v">${p.levels.up}%</div></div>
+      <div class="lb"><div class="n">冲刺层</div><div class="v">${p.levels.top}%</div></div>
+    </div>
+
+    <div class="note-box">${p.note}</div>
+
+    <div class="sec-title">典型错因</div>
+    <div class="err-list">
+      ${p.errors.map(e => `
+        <div class="err-item">
+          <div class="t">${e.t}</div>
+          <div class="d">${e.d}</div>
+          <div class="meta">${e.meta}</div>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="sec-title">单题切片<span class="hint">可下钻题库</span></div>
+    ${p.questions.map(q => `
+      <div class="qm">
+        <div class="row">
+          <span>第${q.no}题</span>
+          <span>${q.level}</span>
+          <span class="rate">${q.correct}%</span>
+        </div>
+        <div class="stem">${q.stem}</div>
+        <div class="stats">本校正确率 ${q.correct}% · <a href="校本题库首页.html">在题库中打开 →</a></div>
+      </div>
+    `).join("")}
+  `;
+}
+
+renderPapers("all");
+
+document.querySelectorAll(".source-tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".source-tabs button").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    renderPapers(btn.dataset.src);
+  });
+});
+
+document.querySelectorAll(".toolbar .chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const group = chip.parentElement;
+    group.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+    chip.classList.add("on");
+  });
+});
+
+const ingestFile = document.getElementById("ingestFile");
+document.getElementById("btnIngest").addEventListener("click", () => ingestFile.click());
+ingestFile.addEventListener("change", () => {
+  const file = ingestFile.files?.[0];
+  if (!file) return;
+  const name = file.name.toLowerCase();
+  const okType = name.endsWith(".pdf") || name.endsWith(".docx");
+  const okSize = file.size <= 20 * 1024 * 1024;
+  if (!okType) {
+    alert("仅支持 PDF、DOCX 格式");
+  } else if (!okSize) {
+    alert("单文件需在 20M 以内");
+  } else {
+    alert(`已上传「${file.name}」\nAI 正在智能识别并一键入库（演示）`);
+  }
+  ingestFile.value = "";
+});
+</script>
+</body>
+</html>

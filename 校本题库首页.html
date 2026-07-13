@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>朝阳实验中学校本库 · 选题组卷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --brand: #1a5fb4;
+    --brand-deep: #134a8e;
+    --brand-soft: #eef3f9;
+    --ink: #1c1f23;
+    --ink-2: #4b5563;
+    --ink-3: #8b939e;
+    --line: #e8eaed;
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --shadow: 0 1px 2px rgba(0,0,0,.03);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink); background: var(--bg); font-size: 14px; line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; border: none; background: none; }
+  .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    height: 58px; background: #fff; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; padding: 0 20px; gap: 24px; flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: var(--brand);
+    display: grid; place-items: center; color: #fff;
+    font-size: 13px; font-weight: 800; letter-spacing: -.5px;
+  }
+  .brand-text { display: flex; flex-direction: column; gap: 1px; line-height: 1.2; }
+  .brand-text .school { font-size: 15px; font-weight: 800; }
+  .brand-text .product { font-size: 11px; color: var(--ink-3); font-weight: 500; }
+  .nav { display: flex; gap: 2px; }
+  .nav a { padding: 8px 14px; border-radius: 6px; color: var(--ink-2); font-weight: 500; }
+  .nav a.active { color: var(--brand); background: var(--brand-soft); font-weight: 600; }
+  .top-right { margin-left: auto; display: flex; align-items: center; gap: 12px; color: var(--ink-2); font-size: 13px; }
+  .semester {
+    color: var(--ink-3); font-size: 12px;
+    padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px;
+  }
+  .progress-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--brand-soft); color: var(--brand);
+    font-size: 12px; font-weight: 600;
+  }
+  .progress-chip .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--brand);
+  }
+
+  /* View mode — strongly differentiated */
+  .view-mode {
+    display: flex; background: #eef0f3; border-radius: 8px; padding: 3px; gap: 2px;
+    position: relative;
+  }
+  .view-mode button {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    color: var(--ink-3); position: relative;
+  }
+  .view-mode button[data-view="prep"].on {
+    background: #fff; color: #2f6b3a;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .view-mode button[data-view="deep"].on {
+    background: var(--brand); color: #fff;
+    box-shadow: 0 1px 3px rgba(26,95,180,.35);
+  }
+  .view-mode .tip {
+    position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: #1c1f23; color: #fff; font-size: 12px; font-weight: 400;
+    padding: 8px 12px; border-radius: 8px; width: max-content; max-width: 260px;
+    line-height: 1.5; opacity: 0; pointer-events: none; transition: opacity .15s;
+    z-index: 80; text-align: left;
+  }
+  .view-mode .tip::before {
+    content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-bottom-color: #1c1f23; border-top: 0;
+  }
+  .view-mode button:hover .tip { opacity: 1; }
+  body.prep-mode .view-mode { background: #e8f0ea; }
+  body.deep-mode { --bg: #eef3f9; }
+  body.deep-mode .topbar { border-bottom-color: #c9daf0; }
+  body.deep-mode .chapter-dash {
+    border-color: #b7d0ef;
+    background: linear-gradient(180deg, #f7fbff 0%, #fff 100%);
+  }
+
+  .subnav {
+    background: #fff; border-bottom: 1px solid var(--line);
+    padding: 0 20px; display: flex; align-items: center; gap: 2px; height: 44px; flex-shrink: 0;
+  }
+  .subnav .tab {
+    padding: 10px 14px; color: var(--ink-2); font-weight: 500; position: relative; font-size: 13px;
+  }
+  .subnav .tab.active { color: var(--brand); font-weight: 600; }
+  .subnav .tab.active::after {
+    content: ""; position: absolute; left: 14px; right: 14px; bottom: 0;
+    height: 2px; background: var(--brand);
+  }
+  .subnav .meta { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .link-papers { color: var(--brand); font-weight: 600; font-size: 13px; }
+
+  .scope-bar {
+    margin: 12px 20px 0;
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 8px 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .scope-tabs { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .scope-label { font-size: 12px; color: var(--ink-3); }
+  .scope-btn {
+    padding: 5px 12px; border-radius: 6px; border: 1px solid var(--line);
+    font-size: 12px; font-weight: 500; color: var(--ink-2); background: #fff;
+  }
+  .scope-btn.on {
+    border-color: var(--brand); background: var(--brand-soft); color: var(--brand); font-weight: 600;
+  }
+
+  .main {
+    flex: 1; display: grid; grid-template-columns: 240px 1fr;
+    gap: 12px; padding: 12px 20px 72px; min-height: 0;
+  }
+  body.prep-mode .chapter-dash,
+  body.prep-mode .smart-bar,
+  body.prep-mode .fg-level,
+  body.prep-mode .xq-deep,
+  body.prep-mode .xq-tip,
+  body.prep-mode .xq-more,
+  body.prep-mode .xq-detail,
+  body.prep-mode .progress-tip { display: none !important; }
+  /* Prep mode: compact inline metrics, question body first */
+  body.prep-mode .xueqing {
+    margin: 0 16px 8px; padding: 0; border: none; background: transparent;
+  }
+  body.prep-mode .xq-row {
+    display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+    justify-content: flex-start;
+  }
+  body.prep-mode .xq-item {
+    text-align: left; padding: 0; display: flex; align-items: baseline; gap: 4px;
+  }
+  body.prep-mode .xq-item .k { font-size: 12px; }
+  body.prep-mode .xq-item .v { font-size: 13px; font-weight: 600; margin-top: 0; }
+  body.prep-mode .xq-item .linkish { display: none; }
+  body.prep-mode .xq-item:nth-child(n+3) { display: none; }
+  body.prep-mode .q-body { padding: 10px 16px 6px; font-size: 16px; }
+  body.prep-mode .q-meta { padding-bottom: 6px; }
+
+  body.prep-mode .ai-diag-summary,
+  body.prep-mode .ai-diag-actions { display: none !important; }
+  body.prep-mode .ai-rec {
+    margin: 0 16px 8px; padding: 6px 10px; font-size: 12px;
+  }
+
+  /* AI diagnosis panel */
+  .chapter-dash {
+    background: #fff; border: 1px solid #c9daf0; border-radius: var(--radius);
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .ai-diag-hd {
+    display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+  }
+  .ai-diag-hd .badge {
+    flex-shrink: 0; padding: 3px 8px; border-radius: 4px;
+    background: var(--brand); color: #fff; font-size: 11px; font-weight: 700;
+  }
+  .ai-diag-hd .titles { flex: 1; min-width: 200px; }
+  .ai-diag-hd .titles .t { font-size: 15px; font-weight: 800; }
+  .ai-diag-hd .titles .s { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .ai-diag-hd .dash-actions { margin-left: auto; }
+  .ai-diag-summary {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px; border-radius: 8px;
+    background: linear-gradient(90deg, #eef5ff, #f7fbff);
+    border: 1px solid #d6e6ff;
+    font-size: 13px; line-height: 1.65; color: var(--ink);
+  }
+  .ai-diag-summary .ai-ico {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px;
+    background: var(--brand); color: #fff; font-size: 11px; font-weight: 800;
+    display: grid; place-items: center; margin-top: 1px;
+  }
+  .ai-diag-summary b { color: var(--brand-deep); }
+  .ai-diag-actions {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .ai-act-card {
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+    background: #fafbfc; cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .ai-act-card:hover { border-color: var(--brand); background: var(--brand-soft); }
+  .ai-act-card .k { font-size: 11px; color: var(--ink-3); margin-bottom: 4px; }
+  .ai-act-card .v { font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.45; }
+  .ai-act-card .v em { font-style: normal; color: var(--brand); }
+
+  /* metrics as footnote — don't compete with AI conclusion */
+  .dash-metrics {
+    display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px;
+    border-top: none; padding-top: 2px; margin-top: -2px;
+  }
+  .dash-metric {
+    flex: 0 1 auto; padding: 0; border-left: none; min-width: 0;
+    display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap;
+  }
+  .dash-metric .k { font-size: 11px; color: var(--ink-3); font-weight: 400; }
+  .dash-metric .v {
+    font-size: 12px; font-weight: 600; margin-top: 0; color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .dash-metric .sub { display: none; }
+  .dash-metric .gap {
+    display: inline-block; margin-left: 2px; font-size: 11px; font-weight: 500;
+  }
+  .btn-detail {
+    padding: 7px 12px; border-radius: 6px; border: 1px solid var(--line);
+    font-size: 12px; font-weight: 600; color: var(--brand); white-space: nowrap; background: #fff;
+  }
+  .btn-detail:hover { background: var(--brand-soft); border-color: var(--brand); }
+
+  /* AI recommend strip on question */
+  .ai-rec {
+    margin: 0 12px 10px; padding: 8px 12px; border-radius: 8px;
+    background: #eef5ff; border: 1px solid #cfe0ff;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .ai-rec-tag {
+    flex-shrink: 0; padding: 2px 8px; border-radius: 4px;
+    background: var(--brand); color: #fff; font-size: 11px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .ai-rec-tag.weak { background: #c45600; }
+  .ai-rec-tag.mid { background: #1a5fb4; }
+  .ai-rec-tag.mother { background: #5c3d91; }
+  .ai-rec-tag.talk { background: #0f766e; }
+  .ai-rec-tag.variant { background: #1d4ed8; }
+  .ai-rec-body { flex: 1; min-width: 0; font-size: 12px; line-height: 1.55; color: var(--ink-2); }
+
+  /* AI basket assistant */
+  .basket-float {
+    position: fixed; right: 24px; bottom: 20px; z-index: 30;
+    background: #fff; border: 1px solid #b7d0ef; border-radius: 14px;
+    box-shadow: 0 10px 32px rgba(15,35,80,.14); padding: 14px 16px;
+    width: min(380px, calc(100vw - 40px));
+  }
+  .basket-float .hd-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .basket-float .hd-row .ai-badge {
+    font-size: 11px; font-weight: 700; color: #fff; background: var(--brand);
+    padding: 2px 7px; border-radius: 4px;
+  }
+  .basket-float .hd { font-weight: 800; font-size: 14px; }
+  .basket-float .hd span { color: var(--brand); font-weight: 700; }
+  .basket-float .stats { font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
+  .basket-float .ai-advice {
+    font-size: 12px; line-height: 1.55; color: var(--ink-2);
+    padding: 8px 10px; border-radius: 8px; background: #eef5ff; margin-bottom: 10px;
+  }
+  .basket-float .ai-advice b { color: var(--brand-deep); }
+  .basket-float .btn-compose {
+    width: 100%; padding: 10px; border-radius: 8px;
+    background: linear-gradient(90deg, #1677ff, #1a5fb4); color: #fff;
+    font-weight: 700; font-size: 13px;
+  }
+  .hw-panel {
+    display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
+  }
+  .hw-panel.show { display: block; }
+  .hw-panel .label { font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
+  .hw-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .hw-opt {
+    padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line);
+    font-size: 12px; font-weight: 600; color: var(--ink-2); background: #f7f8fa;
+  }
+  .hw-opt:hover, .hw-opt.on {
+    border-color: var(--brand); background: var(--brand-soft); color: var(--brand);
+  }
+
+  .report-link {
+    font-size: 12px; font-weight: 500; color: var(--ink-3);
+    padding: 0; border: none; background: transparent;
+    text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #d0d4db;
+  }
+  .report-link:hover { color: var(--ink-2); text-decoration-color: var(--ink-3); background: transparent; }
+
+  /* Chapter detail modal kept below — old dash styles removed */
+  /* Chapter detail modal */
+  .modal-mask {
+    position: fixed; inset: 0; background: rgba(15,23,42,.28);
+    opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 60;
+  }
+  .modal-mask.show { opacity: 1; pointer-events: auto; }
+  .modal {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -46%) scale(.98);
+    width: min(720px, 92vw); max-height: min(80vh, 640px);
+    background: #fff; border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,.14);
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 70;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .modal.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+  .modal-hd {
+    padding: 16px 20px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .modal-hd .txt { flex: 1; }
+  .modal-hd h3 { margin: 0 0 4px; font-size: 16px; font-weight: 800; }
+  .modal-hd p { margin: 0; font-size: 12px; color: var(--ink-3); }
+  .modal-body {
+    flex: 1; overflow: auto; padding: 18px 20px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  .modal-col h4 {
+    margin: 0 0 10px; font-size: 13px; font-weight: 700;
+  }
+  .modal-col h4 .sub { font-weight: 400; color: var(--ink-3); margin-left: 6px; font-size: 12px; }
+  .modal-ft {
+    padding: 12px 20px; border-top: 1px solid var(--line);
+    display: flex; justify-content: flex-end;
+  }
+  .modal-ft button {
+    padding: 8px 16px; border-radius: 8px; background: var(--brand); color: #fff;
+    font-weight: 600; font-size: 13px;
+  }
+  .modal.report-modal { width: min(760px, 94vw); max-height: min(86vh, 720px); }
+  .modal.report-modal .modal-body {
+    grid-template-columns: 1fr; gap: 14px;
+  }
+  .report-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .report-card {
+    border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: #fafbfc;
+  }
+  .report-card .k { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; font-weight: 600; }
+  .report-card .v { font-size: 13px; color: var(--ink); line-height: 1.55; }
+  .report-card .v b { color: var(--brand-deep); font-weight: 700; }
+  .report-heat {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 4px;
+  }
+  .report-heat span {
+    display: block; text-align: center; padding: 8px 4px; border-radius: 6px;
+    font-size: 11px; font-weight: 600; color: #fff;
+  }
+  .report-heat .h1 { background: #1a5fb4; }
+  .report-heat .h2 { background: #3d7fd4; }
+  .report-heat .h3 { background: #7aa8e0; color: #163a66; }
+  .report-heat .h4 { background: #d6e4f5; color: #4a6078; }
+  .report-advice {
+    padding: 10px 12px; border-radius: 8px; background: #eef5ff; border: 1px solid #cfe0ff;
+    font-size: 13px; line-height: 1.6; color: var(--ink);
+  }
+  @media (max-width: 640px) {
+    .report-grid { grid-template-columns: 1fr; }
+    .report-heat { grid-template-columns: 1fr 1fr; }
+  }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; min-height: 0;
+  }
+  .panel-hd {
+    padding: 11px 14px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px;
+  }
+  .panel-hd .hint { margin-left: auto; font-size: 12px; color: var(--ink-3); font-weight: 400; }
+
+  .mode-switch {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 10px; border-bottom: 1px solid var(--line);
+  }
+  .mode-switch button {
+    padding: 7px; border-radius: 6px; background: #f7f8fa; color: var(--ink-2); font-weight: 500; font-size: 13px;
+  }
+  .mode-switch button.on { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+  .edition {
+    padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--ink-3);
+  }
+  .edition strong { color: var(--ink-2); font-weight: 600; }
+  .progress-tip {
+    margin: 8px 10px 0; padding: 8px 10px; border-radius: 8px;
+    background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .progress-tip .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--brand);
+  }
+  .tree { overflow: auto; padding: 8px; flex: 1; }
+  .chapter { border-radius: 8px; margin-bottom: 2px; }
+  .chapter > summary {
+    list-style: none; cursor: pointer; padding: 9px 10px;
+    display: flex; align-items: center; gap: 8px; border-radius: 8px; font-size: 13px;
+  }
+  .chapter > summary::-webkit-details-marker { display: none; }
+  .chapter > summary:hover { background: #f7f8fa; }
+  .chapter[open] > summary { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+  .now-badge {
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px;
+    background: var(--brand); color: #fff;
+  }
+  .ch-rate { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  body.prep-mode .ch-rate { display: none; }
+  .sections { padding: 0 4px 6px 16px; }
+  .sec {
+    padding: 7px 10px; border-radius: 6px; display: flex; align-items: center; gap: 8px;
+    color: var(--ink-2); cursor: pointer; font-size: 13px;
+  }
+  .sec:hover { background: #f7f8fa; }
+  .sec.active { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+  .sec .mini { margin-left: auto; font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  body.prep-mode .sec .mini { display: none; }
+
+  .center { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .smart-bar {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 10px 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .smart-bar .label { font-weight: 600; font-size: 13px; margin-right: 4px; }
+  .pill {
+    padding: 4px 11px; border-radius: 6px; border: 1px solid var(--line);
+    background: #fff; color: var(--ink-2); font-size: 12px; font-weight: 500;
+  }
+  .pill.on { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+  .smart-bar .hint { margin-left: auto; font-size: 12px; color: var(--ink-3); }
+
+  .filters {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 8px 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+  }
+  .fg { display: flex; align-items: center; gap: 4px; color: var(--ink-3); font-size: 12px; position: relative; }
+  .fg-origin { flex: 1 1 100%; }
+  .chip { padding: 3px 9px; border-radius: 4px; color: var(--ink-2); font-size: 12px; position: relative; }
+  .chip.on { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+  .chip.has-tip { cursor: help; }
+  .chip-tip {
+    position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: #1c1f23; color: #fff; font-size: 12px; font-weight: 400;
+    padding: 8px 12px; border-radius: 8px; width: max-content; max-width: 260px;
+    line-height: 1.55; opacity: 0; pointer-events: none; transition: opacity .15s;
+    z-index: 40; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  }
+  .chip-tip::before {
+    content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-bottom-color: #1c1f23; border-top: 0;
+  }
+  .chip.has-tip:hover .chip-tip { opacity: 1; }
+  .sort { margin-left: auto; display: flex; gap: 2px; }
+  .sort button { padding: 3px 9px; border-radius: 4px; color: var(--ink-3); font-size: 12px; }
+  .sort button.on { color: var(--brand); background: var(--brand-soft); font-weight: 600; }
+
+  .origin-badge {
+    margin-left: auto; flex-shrink: 0;
+    font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .origin-badge.deposit {
+    background: #e8f0ea; color: #2f6b3a;
+  }
+  .origin-badge.collect {
+    background: #eef3f9; color: #134a8e;
+  }
+  .q-top-right {
+    margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  }
+  .q-top-right .origin-badge { margin-left: 0; }
+  .q-top-right .q-src { margin-left: 0; }
+
+  .qlist { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+  .qcard {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; transition: border-color .15s;
+  }
+  .qcard:hover { border-color: #c5d0de; }
+  .qcard.expanded { border-color: var(--brand); }
+  .q-top {
+    padding: 12px 16px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .tag { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+  .tag + .tag::before { content: "·"; margin-right: 10px; color: var(--line); }
+  .q-src {
+    font-size: 12px; color: var(--brand); font-weight: 500;
+    text-decoration: none; border-bottom: 1px dashed transparent;
+  }
+  .q-src:hover { border-bottom-color: var(--brand); }
+  .q-body { padding: 8px 16px; font-size: 15px; line-height: 1.7; }
+  .q-meta {
+    padding: 0 16px 10px; display: flex; flex-wrap: wrap; gap: 14px;
+    font-size: 12px; color: var(--ink-3);
+  }
+  .q-meta b { color: var(--ink-2); font-weight: 500; }
+
+  .xueqing {
+    margin: 0 12px 12px; border-radius: 8px; border: 1px solid var(--line);
+    background: #fafbfc; padding: 10px 12px;
+  }
+  .xq-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .xq-item { text-align: left; padding: 4px 6px; }
+  .xq-item.clickable { cursor: pointer; border-radius: 6px; }
+  .xq-item.clickable:hover { background: var(--brand-soft); }
+  .xq-item .k { font-size: 11px; color: var(--ink-3); display: flex; align-items: center; gap: 4px; }
+  .xq-item .v {
+    font-size: 16px; font-weight: 700; margin-top: 2px; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .xq-item .v .linkish {
+    font-size: 11px; font-weight: 600; color: var(--brand); margin-left: 6px;
+  }
+  .xq-more {
+    margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    padding-top: 8px; border-top: 1px solid var(--line);
+  }
+  .xq-tip { font-size: 12px; color: var(--ink-2); flex: 1; }
+  .xq-toggle { color: var(--brand); font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+  .xq-detail {
+    display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
+    grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .qcard.expanded .xq-detail { display: grid; }
+  .xq-block h4 { margin: 0 0 8px; font-size: 12px; color: var(--ink-3); font-weight: 600; }
+  .wrong-sample {
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px; font-size: 12px; color: var(--ink-2); line-height: 1.6;
+  }
+  .wrong-sample .label { color: var(--ink-3); font-size: 11px; margin-bottom: 4px; }
+  .wrong-sample .ans { font-weight: 600; color: var(--ink); }
+  .wrong-sample .why { margin-top: 4px; }
+  .wrong-sample .who {
+    margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line);
+    color: var(--brand); font-weight: 600; cursor: pointer;
+  }
+  .wrong-sample .who:hover { text-decoration: underline; }
+  .err-bar {
+    display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; color: var(--ink-2);
+  }
+  .err-bar .name-btn {
+    width: 130px; text-align: left; color: var(--ink-2); font-size: 12px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .err-bar .name-btn:hover { color: var(--brand); }
+  .err-bar .bar {
+    flex: 1; height: 4px; background: #eceef1; border-radius: 99px; overflow: hidden;
+  }
+  .err-bar .bar span { display: block; height: 100%; background: var(--brand); opacity: .55; border-radius: 99px; }
+  .err-bar .pct { width: 32px; text-align: right; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+  .spark {
+    display: flex; align-items: flex-end; gap: 6px; height: 40px; margin: 8px 0;
+  }
+  .spark i { flex: 1; border-radius: 2px 2px 0 0; background: var(--brand); opacity: .75; }
+  .spark-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-3); }
+
+  /* Footer actions — one clear row */
+  .q-actions {
+    padding: 10px 16px; border-top: 1px solid var(--line);
+    display: flex; align-items: center; gap: 8px; background: #fafbfc;
+  }
+  .q-act-left { display: flex; align-items: center; gap: 2px; }
+  .q-act-right {
+    margin-left: auto; display: flex; align-items: center; gap: 8px;
+  }
+  .q-actions .ghost {
+    color: var(--ink-3); padding: 6px 10px; border-radius: 6px; font-size: 12px;
+  }
+  .q-actions .ghost:hover { color: var(--ink-2); background: #f0f1f3; }
+  .q-actions .ghost.accent {
+    color: var(--brand-deep); font-weight: 600;
+    border: 1px solid #c9daf0; background: #fff;
+  }
+  .q-actions .ghost.accent:hover { background: var(--brand-soft); border-color: var(--brand); }
+  .btn-add {
+    background: var(--brand); color: #fff;
+    padding: 6px 16px; border-radius: 6px; font-weight: 600; font-size: 13px;
+  }
+  .btn-add:hover { background: var(--brand-deep); }
+
+  /* Tool demo panels */
+  .tool-panel {
+    display: none; margin: 0 12px 12px; border: 1px solid var(--line);
+    border-radius: 8px; background: #fafbfc; padding: 12px 14px;
+  }
+  .qcard.tool-open .tool-panel.show { display: block; }
+  .tool-panel h4 { margin: 0 0 8px; font-size: 13px; font-weight: 700; }
+  .tool-panel .opts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .tool-opt {
+    padding: 5px 10px; border-radius: 6px; border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-2); background: #fff;
+  }
+  .tool-opt.on { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+  .tool-result {
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px; font-size: 14px; line-height: 1.7; min-height: 48px;
+  }
+  .tool-result .label { font-size: 11px; color: var(--ink-3); margin-bottom: 4px; }
+  .tool-actions { display: flex; gap: 8px; margin-top: 10px; justify-content: flex-end; }
+  .tool-actions button {
+    padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  }
+  .tool-actions .primary { background: var(--brand); color: #fff; }
+  .tool-actions .ghost-btn { border: 1px solid var(--line); color: var(--ink-2); }
+  .tool-loading { color: var(--ink-3); font-size: 13px; }
+
+  .weak-item {
+    display: flex; align-items: center; gap: 8px; padding: 8px 0;
+    border-bottom: 1px solid var(--line); font-size: 13px;
+  }
+  .weak-item:last-child { border-bottom: none; }
+  .weak-item .name { flex: 1; color: var(--ink-2); }
+  .weak-item .val { color: var(--ink-3); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ai-tip {
+    margin-top: 14px; font-size: 12px; color: var(--ink-2); line-height: 1.65;
+    padding: 10px 12px; background: #f7f8fa; border-radius: 8px;
+    grid-column: 1 / -1;
+  }
+
+  /* Student drill-down drawer */
+  .drawer-mask {
+    position: fixed; inset: 0; background: rgba(15,23,42,.28);
+    opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40;
+  }
+  .drawer-mask.show { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; width: min(420px, 92vw); height: 100%;
+    background: #fff; box-shadow: -8px 0 32px rgba(0,0,0,.08);
+    transform: translateX(100%); transition: transform .25s ease; z-index: 50;
+    display: flex; flex-direction: column;
+  }
+  .drawer.show { transform: none; }
+  .drawer-hd {
+    padding: 16px 18px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .drawer-hd .txt { flex: 1; min-width: 0; }
+  .drawer-hd h3 { margin: 0 0 4px; font-size: 15px; font-weight: 800; }
+  .drawer-hd p { margin: 0; font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+  .drawer-close {
+    width: 28px; height: 28px; border-radius: 6px; color: var(--ink-3); font-size: 18px; line-height: 28px;
+  }
+  .drawer-close:hover { background: #f3f4f6; color: var(--ink); }
+  .drawer-body { flex: 1; overflow: auto; padding: 14px 18px; }
+  .stu-summary {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;
+  }
+  .stu-summary .box {
+    background: #f7f8fa; border-radius: 8px; padding: 10px; text-align: center;
+  }
+  .stu-summary .box .k { font-size: 11px; color: var(--ink-3); }
+  .stu-summary .box .v { font-size: 18px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stu-group { margin-bottom: 16px; }
+  .stu-group h4 {
+    margin: 0 0 8px; font-size: 12px; color: var(--ink-3); font-weight: 600;
+  }
+  .stu-list { display: flex; flex-direction: column; gap: 6px; }
+  .stu {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px;
+  }
+  .stu .avatar {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--brand-soft); color: var(--brand);
+    display: grid; place-items: center; font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .stu .info { flex: 1; min-width: 0; }
+  .stu .name { font-weight: 600; }
+  .stu .detail { font-size: 11px; color: var(--ink-3); margin-top: 1px; }
+  .stu .act {
+    font-size: 12px; color: var(--brand); font-weight: 600; white-space: nowrap;
+  }
+  .drawer-ft {
+    padding: 12px 18px; border-top: 1px solid var(--line);
+    display: flex; gap: 8px;
+  }
+  .drawer-ft button {
+    flex: 1; padding: 9px; border-radius: 8px; font-weight: 600; font-size: 13px;
+  }
+  .drawer-ft .primary { background: var(--brand); color: #fff; }
+  .drawer-ft .ghost { border: 1px solid var(--line); color: var(--ink-2); }
+
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 220px 1fr; }
+    .modal-body { grid-template-columns: 1fr; }
+    .ai-diag-actions { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .left { display: none; }
+    .chapter-dash { flex-wrap: wrap; }
+    .dash-metrics { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body class="prep-mode">
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">朝实</div>
+      <div class="brand-text">
+        <span class="school">朝阳实验中学校本库</span>
+        <span class="product">沉淀本校学情，驱动精准教学</span>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="view-mode">
+        <button class="on" data-view="prep">
+          备课模式
+          <span class="tip">专注选题组卷，只保留题目与最核心指标，适合快速备课</span>
+        </button>
+        <button data-view="deep">
+          AI学情模式
+          <span class="tip">AI 给出讲评建议、错因下钻与推荐选题，适合诊断与干预</span>
+        </button>
+      </div>
+      <a class="report-link" href="#" id="btnReport">校本题库建设报告</a>
+      <span class="semester">2025–2026 · 秋季</span>
+      <span class="progress-chip"><span class="dot"></span>教学进度 · 第三章 代数式</span>
+      <span>李老师</span>
+    </div>
+  </header>
+
+  <div class="subnav">
+    <a class="tab active" href="校本题库首页.html">教材/知识点选题</a>
+    <a class="tab" href="校本试卷首页.html">试卷</a>
+    <a class="tab" href="#">我的</a>
+    <div class="meta">
+      <a class="link-papers" href="校本试卷首页.html">校本试卷库 →</a>
+    </div>
+  </div>
+
+  <div class="scope-bar">
+    <div class="scope-tabs">
+      <span class="scope-label">学情范围</span>
+      <button class="scope-btn" data-scope="school">本校</button>
+      <button class="scope-btn on" data-scope="c3">初一(3)班</button>
+      <button class="scope-btn" data-scope="c5">初一(5)班</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <aside class="panel left">
+      <div class="mode-switch">
+        <button class="on" id="modeChapter">教材章节</button>
+        <button id="modeKnowledge">知识点</button>
+      </div>
+      <div class="edition">教材：<strong>人教版 / 七年级上册 (2024)</strong></div>
+      <div class="progress-tip"><span class="dot"></span>已定位至当前教学进度</div>
+      <div class="tree" id="chapterTree">
+        <details class="chapter">
+          <summary><span>第一章 有理数</span><span class="ch-rate">79%</span></summary>
+          <div class="sections">
+            <div class="sec">1.1 正数和负数 <span class="mini">88%</span></div>
+            <div class="sec">1.2 有理数 <span class="mini">81%</span></div>
+            <div class="sec">1.3 数轴 <span class="mini">76%</span></div>
+          </div>
+        </details>
+        <details class="chapter">
+          <summary><span>第二章 有理数的运算</span><span class="ch-rate">74%</span></summary>
+          <div class="sections">
+            <div class="sec">2.1 有理数的加法 <span class="mini">82%</span></div>
+            <div class="sec">2.2 有理数的减法 <span class="mini">77%</span></div>
+            <div class="sec">2.3 有理数的乘除 <span class="mini">70%</span></div>
+          </div>
+        </details>
+        <details class="chapter current" open id="currentChapter">
+          <summary>
+            <span>第三章 代数式</span>
+            <span class="now-badge">正在学</span>
+            <span class="ch-rate">62%</span>
+          </summary>
+          <div class="sections">
+            <div class="sec active">3.1 代数式 <span class="mini">58%</span></div>
+            <div class="sec">3.2 整式的加减 <span class="mini">71%</span></div>
+            <div class="sec">3.3 去括号 <span class="mini">65%</span></div>
+          </div>
+        </details>
+        <details class="chapter">
+          <summary><span>第四章 整式的加减</span><span class="ch-rate">—</span></summary>
+          <div class="sections">
+            <div class="sec">4.1 整式 <span class="mini">—</span></div>
+            <div class="sec">4.2 整式的加减 <span class="mini">—</span></div>
+          </div>
+        </details>
+        <details class="chapter">
+          <summary><span>第五章 一元一次方程</span><span class="ch-rate">54%</span></summary>
+          <div class="sections">
+            <div class="sec">5.1 方程的概念 <span class="mini">66%</span></div>
+            <div class="sec">5.2 解一元一次方程 <span class="mini">58%</span></div>
+            <div class="sec">5.3 实际问题与方程 <span class="mini">47%</span></div>
+          </div>
+        </details>
+        <details class="chapter">
+          <summary><span>第六章 几何图形初步</span><span class="ch-rate">61%</span></summary>
+          <div class="sections">
+            <div class="sec">6.1 几何图形 <span class="mini">72%</span></div>
+            <div class="sec">6.2 直线、射线、线段 <span class="mini">64%</span></div>
+            <div class="sec">6.3 角 <span class="mini">55%</span></div>
+          </div>
+        </details>
+      </div>
+      <div class="tree" id="knowledgeTree" style="display:none">
+        <div class="sec active">代数式的值 <span class="mini">58%</span></div>
+        <div class="sec">合并同类项 <span class="mini">71%</span></div>
+        <div class="sec">科学记数法 <span class="mini">69%</span></div>
+        <div class="sec">一元一次方程应用 <span class="mini">47%</span></div>
+      </div>
+    </aside>
+
+    <section class="center">
+      <div class="chapter-dash" id="chapterDash">
+        <div class="ai-diag-hd">
+          <span class="badge">AI</span>
+          <div class="titles">
+            <div class="t">AI 教研诊断 · 第三章 代数式</div>
+            <div class="s" id="dashScopeHint">初一(3)班 · 本学年</div>
+          </div>
+          <div class="dash-actions">
+            <button class="btn-detail" id="btnChapterDetail" type="button">查看详细诊断</button>
+          </div>
+        </div>
+        <div class="ai-diag-summary">
+          <div class="ai-ico">AI</div>
+          <div id="aiDiagText">AI发现：初一(3)班本章失分主要集中在「代数式的值」和「去括号」。建议本次作业优先补强「代入后符号处理」，并配套 2 道符号变形题巩固。</div>
+        </div>
+        <div class="ai-diag-actions">
+          <div class="ai-act-card" data-ai-act="weak">
+            <div class="k">核心薄弱点</div>
+            <div class="v" id="aiWeakPoints">3 个</div>
+          </div>
+          <div class="ai-act-card" data-ai-act="path">
+            <div class="k">推荐补救路径</div>
+            <div class="v" id="aiPath">先代入计算，再符号变形</div>
+          </div>
+          <div class="ai-act-card" data-ai-act="plan">
+            <div class="k">本次建议题量</div>
+            <div class="v" id="aiPlan">基础 4 + 提高 2 + 冲刺 1</div>
+          </div>
+        </div>
+        <div class="dash-metrics" aria-label="本章参考数据">
+          <div class="dash-metric">
+            <div class="k" id="dashRateLabel">本班正确率</div>
+            <div class="v">
+              <span id="dashCorrect">54%</span>
+              <span class="gap down" id="dashGap">较本校今年 −8</span>
+            </div>
+            <div class="sub" id="dashRateSub">本校今年 62%</div>
+          </div>
+          <div class="dash-metric">
+            <div class="k">得分率</div>
+            <div class="v" id="dashScore">51%</div>
+            <div class="sub" id="dashScoreSub">本学年</div>
+          </div>
+          <div class="dash-metric" id="dashSchoolHist">
+            <div class="k">全校今年</div>
+            <div class="v">
+              <span id="dashSchoolNow">62%</span>
+              <span class="gap up" id="dashSchoolGap">较近3年 +2</span>
+            </div>
+            <div class="sub" id="dashSchoolHistSub">近3秋均值 60%</div>
+          </div>
+          <div class="dash-metric">
+            <div class="k" id="dashWatchLabel">待关注</div>
+            <div class="v" id="dashWatch">9 人</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="smart-bar">
+        <div class="label">本次优先练</div>
+        <button class="pill on" data-filter="all">全部</button>
+        <button class="pill" data-filter="weak">本班薄弱</button>
+        <button class="pill" data-filter="mid">临界提分</button>
+        <button class="pill" data-filter="base">基础巩固</button>
+        <button class="pill" data-filter="exam">易错母题</button>
+        <span class="hint" id="smartHint">第三章 · 初一(3)班</span>
+      </div>
+
+      <div class="filters">
+        <div class="fg">题型
+          <button class="chip on">全部</button>
+          <button class="chip">选择</button>
+          <button class="chip">填空</button>
+          <button class="chip">解答</button>
+        </div>
+        <div class="fg fg-origin">题源
+          <button type="button" class="chip on" data-origin="all">全部</button>
+          <button type="button" class="chip has-tip" data-origin="deposit">校本沉淀
+            <span class="chip-tip">有本校学生作答数据，带正确率、错因、讲评建议。这是最高价值资产。</span>
+          </button>
+          <button type="button" class="chip has-tip" data-origin="collect">校本收录
+            <span class="chip-tip">已进入校本库，但还没有充分学情数据。包括老师上传题、老师从飞象选入的题。</span>
+          </button>
+        </div>
+        <div class="fg">难度
+          <button class="chip on">全部</button>
+          <button class="chip">易</button>
+          <button class="chip">中</button>
+          <button class="chip">难</button>
+        </div>
+        <div class="fg fg-level">适用层次
+          <button class="chip on">全部</button>
+          <button class="chip">基础层</button>
+          <button class="chip">提高层</button>
+          <button class="chip">冲刺层</button>
+        </div>
+        <div class="sort">
+          <button class="on" id="sortLabel">本班正确率↑</button>
+          <button>最新</button>
+        </div>
+      </div>
+
+      <div class="qlist" id="qlist"></div>
+    </section>
+  </div>
+</div>
+
+<div class="basket-float">
+  <div class="hd-row">
+    <span class="ai-badge">AI</span>
+    <div class="hd">AI试卷助手 <span>已选 5 题</span></div>
+  </div>
+  <div class="stats">约 18 分钟 · 已选 5 题 · 覆盖 2/3 薄弱点</div>
+  <div class="ai-advice" id="basketAdvice">
+    <b>质检建议：</b>当前组题偏基础，建议补充 1 道提高层题，覆盖「去括号」薄弱点。
+  </div>
+  <button class="btn-compose" id="btnCompose">AI生成分层校本作业</button>
+  <div class="hw-panel" id="hwPanel">
+    <div class="label">选择作业方案</div>
+    <div class="hw-opts">
+      <button class="hw-opt" data-hw="base">基础巩固版</button>
+      <button class="hw-opt" data-hw="mid">临界提分版</button>
+      <button class="hw-opt on" data-hw="error">错因补救版</button>
+      <button class="hw-opt" data-hw="weekend">周末作业版</button>
+      <button class="hw-opt" data-hw="sprint">考前冲刺版</button>
+    </div>
+    <div class="tool-actions" style="margin-top:10px">
+      <button class="ghost-btn" id="hwCancel">取消</button>
+      <button class="primary" id="hwConfirm">确认生成</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="chapterModalMask"></div>
+<div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-labelledby="chapterModalTitle">
+  <div class="modal-hd">
+    <div class="txt">
+      <h3 id="chapterModalTitle">第三章 代数式 · 详细学情</h3>
+      <p id="chapterModalSub">初一(3)班 · 近 3 个秋季学期</p>
+    </div>
+    <button class="drawer-close" id="chapterModalClose" aria-label="关闭">×</button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-col">
+      <div id="modalClassCompare">
+        <h4>本班本学年 · 对照本校今年</h4>
+        <div class="stu-summary" style="margin-bottom:16px">
+          <div class="box"><div class="k">本班正确率</div><div class="v" id="modalClassRate">54%</div></div>
+          <div class="box"><div class="k">本校今年</div><div class="v" id="modalSchoolYear">62%</div></div>
+          <div class="box"><div class="k">差距</div><div class="v" id="modalClassGap">−8</div></div>
+        </div>
+      </div>
+
+      <h4 id="modalSparkTitle">全校近 3 年正确率走势<span class="sub">仅秋季 · 对照今年</span></h4>
+      <div class="spark" style="height:56px" id="modalSpark">
+        <i style="height:58%"></i>
+        <i style="height:62%"></i>
+        <i style="height:68%"></i>
+      </div>
+      <div class="spark-labels" id="modalSparkLabels"><span>23 秋</span><span>24 秋</span><span>25 秋</span></div>
+      <p id="modalSchoolHistNote" style="margin:8px 0 0;font-size:12px;color:var(--ink-3);line-height:1.55">
+        全校今年 62%，近 3 秋均值 58%，较近 3 年 <b style="color:#2f6b3a">+4</b> 个百分点。
+      </p>
+
+      <h4 style="margin-top:20px">典型错因<span class="sub" id="modalErrScope">本班本学年</span></h4>
+      <div id="modalErrors">
+        <div class="err-bar"><span style="width:72px">符号错误</span><div class="bar"><span style="width:48%"></span></div><span class="pct">48%</span></div>
+        <div class="err-bar"><span style="width:72px">运算失误</span><div class="bar"><span style="width:30%"></span></div><span class="pct">30%</span></div>
+        <div class="err-bar"><span style="width:72px">概念混淆</span><div class="bar"><span style="width:14%"></span></div><span class="pct">14%</span></div>
+        <div class="err-bar"><span style="width:72px">审题不清</span><div class="bar"><span style="width:8%"></span></div><span class="pct">8%</span></div>
+      </div>
+    </div>
+    <div class="modal-col">
+      <h4>薄弱知识点<span class="sub" id="modalWeakScope">本班本学年</span></h4>
+      <div id="modalWeak">
+        <div class="weak-item"><span class="name">代数式的值</span><span class="val">48%</span></div>
+        <div class="weak-item"><span class="name">整式加减综合</span><span class="val">58%</span></div>
+        <div class="weak-item"><span class="name">去括号变号</span><span class="val">61%</span></div>
+      </div>
+
+      <h4 style="margin-top:20px">适用层次表现<span class="sub" id="modalLevelScope">本学年</span></h4>
+      <div class="err-bar"><span style="width:56px">基础层</span><div class="bar"><span id="lvBaseBar" style="width:62%"></span></div><span class="pct" id="lvBase">62%</span></div>
+      <div class="err-bar"><span style="width:56px">提高层</span><div class="bar"><span id="lvUpBar" style="width:38%"></span></div><span class="pct" id="lvUp">38%</span></div>
+      <div class="err-bar"><span style="width:56px">冲刺层</span><div class="bar"><span id="lvTopBar" style="width:18%"></span></div><span class="pct" id="lvTop">18%</span></div>
+    </div>
+    <div class="ai-tip" id="modalTip">初一(3)班本章本学年弱于本校今年。建议先盯「a² 算成 −4」的 6 名学生，再布置符号专项。</div>
+  </div>
+  <div class="modal-ft">
+    <button type="button" id="chapterModalOk">知道了</button>
+  </div>
+</div>
+
+<div class="modal-mask" id="reportModalMask"></div>
+<div class="modal report-modal" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+  <div class="modal-hd">
+    <div class="txt">
+      <h3 id="reportModalTitle">校本题库建设报告</h3>
+      <p>朝阳实验中学 · 本学期教研资产体检（演示）</p>
+    </div>
+    <button class="drawer-close" id="reportModalClose" aria-label="关闭">×</button>
+  </div>
+  <div class="modal-body">
+    <div class="report-grid">
+      <div class="report-card">
+        <div class="k">校本资产建设度</div>
+        <div class="v">已沉淀核心母题 <b>186</b> 道 · 覆盖教材知识点 <b>72%</b> · 带本校学情数据 <b>91%</b></div>
+      </div>
+      <div class="report-card">
+        <div class="k">题库生命力（近 30 天）</div>
+        <div class="v">组卷 <b>128</b> 次 · 复用题 <b>640</b> 道次 · 生成变式 <b>93</b> 道</div>
+      </div>
+      <div class="report-card">
+        <div class="k">高价值题沉淀</div>
+        <div class="v">有错因分析 <b>142</b> · 有典型作答 <b>118</b> · 有校本讲评建议 <b>76</b></div>
+      </div>
+      <div class="report-card">
+        <div class="k">教研共创</div>
+        <div class="v">参与精修 / 标注 / 变式建设教师 <b>14</b> 人 · 本学期新增校本题 <b>47</b> 道</div>
+      </div>
+    </div>
+    <div class="report-card">
+      <div class="k">知识点覆盖热力图（七年级上）</div>
+      <div class="report-heat">
+        <span class="h1">第一章 厚</span>
+        <span class="h2">第二章 较厚</span>
+        <span class="h3">第三章 中</span>
+        <span class="h4">第四章 薄</span>
+      </div>
+    </div>
+    <div class="report-advice">
+      <b>建设建议：</b>下一阶段优先补齐「第四章 图形认识」题量，并继续沉淀「代入后符号处理」「去括号」两类易错母题；建议备课组本周完成第三章典型错因标注。
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button type="button" id="reportModalOk">知道了</button>
+  </div>
+</div>
+
+<div class="drawer-mask" id="drawerMask"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-hd">
+    <div class="txt">
+      <h3 id="drawerTitle">学生名单</h3>
+      <p id="drawerSub">点击错因可查看具体是哪些学生</p>
+    </div>
+    <button class="drawer-close" id="drawerClose" aria-label="关闭">×</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-ft">
+    <button class="ghost" id="drawerExport">导出名单</button>
+    <button class="primary" id="drawerAssign">一键推送变式练习</button>
+  </div>
+</aside>
+
+<script>
+const SCHOOL_CHAPTER_YEARS = [58, 60, 62]; // 23秋, 24秋, 25秋(今年)
+const SCHOOL_CHAPTER_AVG3 = Math.round((58 + 60 + 62) / 3); // 60
+const SCHOOL_CHAPTER_THIS = 62;
+
+const scopes = {
+  school: {
+    key: "school",
+    label: "本校",
+    isClass: false,
+    chapterCorrect: SCHOOL_CHAPTER_THIS,
+    chapterScore: 58.7,
+    schoolThisYear: SCHOOL_CHAPTER_THIS,
+    schoolAvg3: SCHOOL_CHAPTER_AVG3,
+    schoolHistGap: SCHOOL_CHAPTER_THIS - SCHOOL_CHAPTER_AVG3,
+    gapText: "",
+    gapClass: "flat",
+    tip: "本校本章今年 62%。近 3 秋均值 60%，今年较近 3 年 +2。建议优先推「基础巩固 + 符号专项」。",
+    schoolSpark: SCHOOL_CHAPTER_YEARS,
+    rateSub: "近 3 秋均值 60% · 今年较近3年 +2",
+    scoreSub: "本学年",
+    hint: "本校 · 本学年",
+    modalSub: "本校 · 本学年正确率，并对照近 3 个秋季",
+    weakCount: "3 个",
+    weakTop: "代数式的值等",
+    watchLabel: "校本题量",
+    watchDisplay: "12,486",
+    weak: [
+      { name: "代数式的值", val: "58%" },
+      { name: "整式加减综合", val: "64%" },
+      { name: "去括号变号", val: "65%" }
+    ],
+    errors: [
+      { name: "符号错误", pct: 42 },
+      { name: "运算失误", pct: 28 },
+      { name: "概念混淆", pct: 18 },
+      { name: "审题不清", pct: 12 }
+    ],
+    levels: { base: 70, up: 45, top: 22 }
+  },
+  c3: {
+    key: "c3",
+    label: "初一(3)班",
+    isClass: true,
+    chapterCorrect: 54,
+    chapterScore: 51,
+    schoolThisYear: SCHOOL_CHAPTER_THIS,
+    schoolAvg3: SCHOOL_CHAPTER_AVG3,
+    schoolHistGap: SCHOOL_CHAPTER_THIS - SCHOOL_CHAPTER_AVG3,
+    gapText: "较本校今年 −8",
+    gapClass: "down",
+    tip: "本班本学年正确率 54%，较本校今年低 8 个百分点。全校今年较近 3 年均值 +2。建议先盯「a² 算成 −4」的 6 名学生。",
+    schoolSpark: SCHOOL_CHAPTER_YEARS,
+    rateSub: "本校今年 62%",
+    scoreSub: "本学年 · 仅本班",
+    hint: "初一(3)班 · 本学年",
+    modalSub: "本班仅看本学年；全校走势用近 3 秋对照今年",
+    weakCount: "3 个",
+    weakTop: "代数式的值等",
+    watchLabel: "待关注学生",
+    watchDisplay: "9 人",
+    weak: [
+      { name: "代数式的值", val: "48%" },
+      { name: "整式加减综合", val: "58%" },
+      { name: "去括号变号", val: "61%" }
+    ],
+    errors: [
+      { name: "符号错误", pct: 48 },
+      { name: "运算失误", pct: 30 },
+      { name: "概念混淆", pct: 14 },
+      { name: "审题不清", pct: 8 }
+    ],
+    levels: { base: 62, up: 38, top: 18 }
+  },
+  c5: {
+    key: "c5",
+    label: "初一(5)班",
+    isClass: true,
+    chapterCorrect: 67,
+    chapterScore: 64,
+    schoolThisYear: SCHOOL_CHAPTER_THIS,
+    schoolAvg3: SCHOOL_CHAPTER_AVG3,
+    schoolHistGap: SCHOOL_CHAPTER_THIS - SCHOOL_CHAPTER_AVG3,
+    gapText: "较本校今年 +5",
+    gapClass: "up",
+    tip: "本班本学年正确率 67%，较本校今年高 5 个百分点。全校今年较近 3 年均值 +2。可适当增加提高层题量。",
+    schoolSpark: SCHOOL_CHAPTER_YEARS,
+    rateSub: "本校今年 62%",
+    scoreSub: "本学年 · 仅本班",
+    hint: "初一(5)班 · 本学年",
+    modalSub: "本班仅看本学年；全校走势用近 3 秋对照今年",
+    weakCount: "2 个",
+    weakTop: "代数式的值等",
+    watchLabel: "待关注学生",
+    watchDisplay: "4 人",
+    weak: [
+      { name: "代数式的值", val: "61%" },
+      { name: "去括号变号", val: "66%" },
+      { name: "整式加减综合", val: "70%" }
+    ],
+    errors: [
+      { name: "符号错误", pct: 36 },
+      { name: "运算失误", pct: 32 },
+      { name: "概念混淆", pct: 20 },
+      { name: "审题不清", pct: 12 }
+    ],
+    levels: { base: 78, up: 52, top: 28 }
+  }
+};
+
+const AI_DIAG = {
+  school: {
+    summary: 'AI发现：本校本章失分主要集中在「代数式的值」和「去括号」。建议本次作业优先补强「代入后符号处理」，并配套 2 道符号变形题巩固。',
+    weak: '3 个',
+    path: '先代入计算，再符号变形',
+    plan: '基础 6 + 提高 3 + 冲刺 1'
+  },
+  c3: {
+    summary: 'AI发现：初一(3)班本章失分主要集中在「代数式的值」和「去括号」。建议本次作业优先补强「代入后符号处理」，并配套 2 道符号变形题巩固。',
+    weak: '3 个',
+    path: '先代入计算，再符号变形',
+    plan: '基础 4 + 提高 2 + 冲刺 1'
+  },
+  c5: {
+    summary: 'AI发现：初一(5)班本章整体优于本校，但「代数式的值」仍有临界生失分。建议提高层加练「代入后符号处理」，并配套 2 道符号变形题巩固。',
+    weak: '2 个',
+    path: '临界生补符号，优生练综合',
+    plan: '基础 2 + 提高 3 + 冲刺 2'
+  }
+};
+
+const AI_REC = {
+  1: { tag: "推荐讲评", cls: "talk", text: "建议课堂精讲：命中本班高频错因「代入后符号处理」，本班正确率低于本校今年 8%。" },
+  2: { tag: "推荐讲评", cls: "talk", text: "建议课堂精讲：本班多人误选「圆锥」，空间旋转概念薄弱，适合当堂演示后追练。" },
+  3: { tag: "临界提分", cls: "mid", text: "建议课后加练：区分度良好，适合推给临界生巩固，快速抬升本章得分率。" },
+  4: { tag: "易错母题", cls: "mother", text: "建议冲刺层选做：建模量纲错误是主失分点，可作为易错母题沉淀进校本题库。" },
+  5: { tag: "适合巩固", cls: "mid", text: "建议课后加练：漏分情况是最大失分点，适合补「分类讨论」专项并生成同错因变式。" },
+  6: { tag: "适合巩固", cls: "mid", text: "建议随堂巩固：正确率稳定，适合新授课当堂练，不必占用统一讲评时间。" }
+};
+
+let currentScope = "c3";
+let currentFilter = "all";
+let currentOrigin = "all";
+let viewMode = "prep";
+
+const ORIGIN_META = {
+  deposit: {
+    key: "deposit",
+    label: "校本沉淀",
+    badge: "校本沉淀 · 有作答数据",
+    tip: "有本校学生作答数据，带正确率、错因、讲评建议。这是最高价值资产。"
+  },
+  collect: {
+    key: "collect",
+    label: "校本收录",
+    badge: "校本收录 · 待学情沉淀",
+    tip: "已进入校本库，但还没有充分学情数据。包括老师上传题、老师从飞象选入的题。"
+  }
+};
+
+const questions = [
+  {
+    id: 1,
+    filter: ["weak", "mid", "exam"],
+    origin: "deposit",
+    source: "2025 本校七年级上期末",
+    paperLink: "校本试卷首页.html",
+    type: "填空题",
+    diff: "较易",
+    level: "提高层",
+    body: "当 <b>a = −2，b = 3</b> 时，代数式 <b>2a² − 3ab + b²</b> 的值为 ____。",
+    kp: "代数式的值",
+    literacy: "运算能力",
+    cite: 1286,
+    span: "近3个秋季",
+    rates: {
+      school: { correct: 52, score: 48.6, years: [48, 51, 52] },
+      c3: { correct: 44, score: 41.0, years: [40, 42, 44] },
+      c5: { correct: 58, score: 55.0, years: [52, 55, 58] }
+    },
+    wrongSamples: [
+      {
+        ans: "答成 −17 或 −1",
+        why: "把 a² 算成 −4（负号带进平方），再与 −3ab 符号连环出错。",
+        errorKey: "sq"
+      },
+      {
+        ans: "答成 17",
+        why: "中间项 −3ab 的负负得正未处理，只算了部分。",
+        errorKey: "sign"
+      }
+    ],
+    errors: [
+      {
+        key: "sq",
+        name: "a² 算成 −4",
+        pct: { school: 31, c3: 38, c5: 24 },
+        students: {
+          c3: [
+            { name: "王浩然", no: "03", detail: "作答 −17 · 把 (−2)² 写成 −4" },
+            { name: "李思远", no: "11", detail: "作答 −17 · 同上" },
+            { name: "赵一诺", no: "15", detail: "作答 −1 · 平方后符号仍保留" },
+            { name: "陈雨桐", no: "18", detail: "作答 −17" },
+            { name: "周子墨", no: "22", detail: "作答 −17" },
+            { name: "吴佳怡", no: "27", detail: "草稿可见 (−2)²=−4" }
+          ],
+          c5: [
+            { name: "刘子轩", no: "05", detail: "作答 −17" },
+            { name: "孙语桐", no: "14", detail: "作答 −1" },
+            { name: "郑浩宇", no: "21", detail: "作答 −17" }
+          ],
+          school: [
+            { name: "跨班汇总", no: "—", detail: "该错因覆盖 7 个班级共 86 人" }
+          ]
+        }
+      },
+      {
+        key: "sign",
+        name: "符号处理错误",
+        pct: { school: 46, c3: 42, c5: 40 },
+        students: {
+          c3: [
+            { name: "黄景行", no: "06", detail: "−3×(−2)×3 算成 −18" },
+            { name: "徐梦瑶", no: "09", detail: "中间项符号写反" },
+            { name: "何俊杰", no: "19", detail: "作答 17" },
+            { name: "高诗涵", no: "25", detail: "作答 17" }
+          ],
+          c5: [
+            { name: "马天佑", no: "08", detail: "作答 17" },
+            { name: "林晓月", no: "16", detail: "中间项漏负号" }
+          ],
+          school: [
+            { name: "跨班汇总", no: "—", detail: "该错因覆盖年级约 42% 错误卷" }
+          ]
+        }
+      },
+      {
+        key: "miss",
+        name: "漏算末项 b²",
+        pct: { school: 14, c3: 12, c5: 16 },
+        students: {
+          c3: [
+            { name: "曹子涵", no: "12", detail: "最终少加 9" },
+            { name: "邓雅琪", no: "28", detail: "草稿未写 b²" }
+          ],
+          c5: [
+            { name: "谢宇轩", no: "03", detail: "最终少加 9" },
+            { name: "韩思琪", no: "19", detail: "漏项" }
+          ],
+          school: [
+            { name: "跨班汇总", no: "—", detail: "约 14% 错误卷漏算末项" }
+          ]
+        }
+      }
+    ],
+    tip: {
+      school: "本校今年该题正确率偏低；近 3 秋持续偏弱，建议作为提高层必做。",
+      c3: "本班本学年正确率 44%，较本校今年低 8 点；6 人把 a² 算成 −4，可精准干预。",
+      c5: "本班本学年正确率 58%，较本校今年高 6 点；仍有 3 人犯平方带负号错误。"
+    }
+  },
+  {
+    id: 2,
+    filter: ["weak", "base", "exam"],
+    origin: "deposit",
+    source: "2025 本校七年级上期中 · 高扫入库",
+    paperLink: "校本试卷首页.html",
+    type: "单项选择题",
+    diff: "容易",
+    level: "基础层",
+    body: "如图，将半圆绕直径所在虚线旋转一周，得到的立体图形是（　）",
+    kp: "平面图形旋转所得立体图形",
+    literacy: "空间观念",
+    cite: 942,
+    span: "本校2次考试",
+    rates: {
+      school: { correct: 61, score: 61.0, years: [58, 60, 61] },
+      c3: { correct: 55, score: 55.0, years: [50, 53, 55] },
+      c5: { correct: 70, score: 70.0, years: [66, 68, 70] }
+    },
+    wrongSamples: [
+      {
+        ans: "误选「圆锥」",
+        why: "把「绕直径」理解成绕半径/绕弦，空间想象不到位。",
+        errorKey: "cone"
+      },
+      {
+        ans: "误选「圆柱」",
+        why: "把半圆当成矩形旋转，混淆常见旋转体。",
+        errorKey: "cyl"
+      }
+    ],
+    errors: [
+      {
+        key: "cone",
+        name: "误选圆锥",
+        pct: { school: 38, c3: 44, c5: 30 },
+        students: {
+          c3: [
+            { name: "王浩然", no: "03", detail: "选项 C 圆锥" },
+            { name: "赵一诺", no: "15", detail: "选项 C 圆锥" },
+            { name: "周子墨", no: "22", detail: "选项 C 圆锥" },
+            { name: "吴佳怡", no: "27", detail: "选项 C 圆锥" }
+          ],
+          c5: [
+            { name: "刘子轩", no: "05", detail: "选项 C 圆锥" },
+            { name: "郑浩宇", no: "21", detail: "选项 C 圆锥" }
+          ],
+          school: [{ name: "跨班汇总", no: "—", detail: "误选圆锥约占错误的 38%" }]
+        }
+      },
+      {
+        key: "cyl",
+        name: "误选圆柱",
+        pct: { school: 27, c3: 28, c5: 25 },
+        students: {
+          c3: [
+            { name: "李思远", no: "11", detail: "选项 B 圆柱" },
+            { name: "陈雨桐", no: "18", detail: "选项 B 圆柱" }
+          ],
+          c5: [{ name: "孙语桐", no: "14", detail: "选项 B 圆柱" }],
+          school: [{ name: "跨班汇总", no: "—", detail: "误选圆柱约占错误的 27%" }]
+        }
+      }
+    ],
+    tip: {
+      school: "空间旋转题，本校今年约四成错选圆锥。",
+      c3: "本班本学年 4 人误选圆锥，建议课堂用实物演示半圆旋转。",
+      c5: "本班本学年掌握较好，可作基础层快速过关题。"
+    }
+  },
+  {
+    id: 3,
+    filter: ["mid", "base"],
+    origin: "collect",
+    source: "老师上传 · 练习册精选",
+    paperLink: "校本试卷首页.html",
+    type: "单项选择题",
+    diff: "较易",
+    level: "基础层",
+    body: "如图是 4×4 的正方形网格，选择一空白小正方形，能与阴影部分组成正方体展开图的方法有（　）种。",
+    kp: "一般的正方体展开图",
+    literacy: "几何直观、空间观念",
+    cite: 2104,
+    span: "近3个秋季",
+    rates: {
+      school: { correct: 63, score: 63.0, years: [60, 62, 63] },
+      c3: { correct: 57, score: 57.0, years: [54, 55, 57] },
+      c5: { correct: 69, score: 69.0, years: [65, 67, 69] }
+    },
+    wrongSamples: [
+      {
+        ans: "少选 1 种（只写出对称的一侧）",
+        why: "漏数对称位置，未完整枚举。",
+        errorKey: "sym"
+      }
+    ],
+    errors: [
+      {
+        key: "sym",
+        name: "漏数对称位置",
+        pct: { school: 41, c3: 46, c5: 35 },
+        students: {
+          c3: [
+            { name: "徐梦瑶", no: "09", detail: "答 2 种（少 1）" },
+            { name: "何俊杰", no: "19", detail: "答 2 种" },
+            { name: "高诗涵", no: "25", detail: "答 2 种" }
+          ],
+          c5: [
+            { name: "马天佑", no: "08", detail: "答 2 种" },
+            { name: "林晓月", no: "16", detail: "答 2 种" }
+          ],
+          school: [{ name: "跨班汇总", no: "—", detail: "漏对称是最高频错因" }]
+        }
+      },
+      {
+        key: "凹",
+        name: "把「凹」形当展开图",
+        pct: { school: 29, c3: 32, c5: 26 },
+        students: {
+          c3: [
+            { name: "曹子涵", no: "12", detail: "选了不能折成的凹形" },
+            { name: "邓雅琪", no: "28", detail: "同上" }
+          ],
+          c5: [{ name: "谢宇轩", no: "03", detail: "选了凹形" }],
+          school: [{ name: "跨班汇总", no: "—", detail: "约占错误的 29%" }]
+        }
+      }
+    ],
+    tip: {
+      school: "区分度良好，适合基础巩固。",
+      c3: "本班枚举不完整较明显，建议课堂带学生逐格排查。",
+      c5: "本班正确率接近七成，可作随堂练。"
+    }
+  },
+  {
+    id: 4,
+    filter: ["weak"],
+    origin: "collect",
+    source: "从飞象选入 · 代数式提优",
+    paperLink: "校本试卷首页.html",
+    type: "单项选择题",
+    diff: "中等",
+    level: "冲刺层",
+    body: "我国古代问题：以绳测井……若设绳长为 x 尺，则可列方程为（　）",
+    kp: "一元一次方程应用 · 和差倍分",
+    literacy: "应用意识、模型观念",
+    cite: 876,
+    span: "近3个秋季",
+    rates: {
+      school: { correct: 41, score: 38.2, years: [36, 39, 41] },
+      c3: { correct: 33, score: 30.0, years: [28, 30, 33] },
+      c5: { correct: 46, score: 43.0, years: [40, 44, 46] }
+    },
+    wrongSamples: [
+      {
+        ans: "方程两边单位/意义不一致",
+        why: "设未知数后，「绳多四尺」与「三折」关系列反或漏减。",
+        errorKey: "model"
+      }
+    ],
+    errors: [
+      {
+        key: "model",
+        name: "方程建模量纲不一致",
+        pct: { school: 44, c3: 50, c5: 40 },
+        students: {
+          c3: [
+            { name: "王浩然", no: "03", detail: "列成 3x+4=4x+1" },
+            { name: "李思远", no: "11", detail: "列成 x/3+4=x/4+1" },
+            { name: "赵一诺", no: "15", detail: "左右意义不匹配" },
+            { name: "周子墨", no: "22", detail: "「多」字理解偏差" }
+          ],
+          c5: [
+            { name: "刘子轩", no: "05", detail: "列式左右不一致" },
+            { name: "郑浩宇", no: "21", detail: "「多」字理解偏差" }
+          ],
+          school: [{ name: "跨班汇总", no: "—", detail: "建模错误是冲刺层主失分点" }]
+        }
+      },
+      {
+        key: "word",
+        name: "「多」字理解偏差",
+        pct: { school: 33, c3: 28, c5: 30 },
+        students: {
+          c3: [
+            { name: "陈雨桐", no: "18", detail: "把「多」理解成「少」" },
+            { name: "吴佳怡", no: "27", detail: "文言题意读偏" }
+          ],
+          c5: [{ name: "孙语桐", no: "14", detail: "文言题意读偏" }],
+          school: [{ name: "跨班汇总", no: "—", detail: "约占错误的 33%" }]
+        }
+      }
+    ],
+    tip: {
+      school: "冲刺层突破题，基础层建议先做简单建模。",
+      c3: "本班仅 33% 做对，4 人建模量纲错误，适合个别辅导。",
+      c5: "本班接近本校平均，可作提高层选做。"
+    }
+  },
+  {
+    id: 5,
+    filter: ["exam", "mid"],
+    origin: "deposit",
+    source: "2024 本校七年级上期末 · 高扫入库",
+    paperLink: "校本试卷首页.html",
+    type: "解答题",
+    diff: "中等",
+    level: "提高层",
+    body: "已知∠AOB=90°，射线 OC 绕点 O 旋转得到射线 OD……在图中补全图形，并求∠BOD 的度数。",
+    kp: "角平分线相关计算、角的动态计算",
+    literacy: "几何直观、运算能力",
+    cite: 1108,
+    span: "本校期末",
+    rates: {
+      school: { correct: 55, score: 51.4, years: [49, 53, 55] },
+      c3: { correct: 48, score: 44.0, years: [42, 45, 48] },
+      c5: { correct: 61, score: 58.0, years: [55, 58, 61] }
+    },
+    wrongSamples: [
+      {
+        ans: "只写 45°，漏掉下方情形的 135°",
+        why: "动态旋转题未分类讨论「上方 / 下方」。",
+        errorKey: "case"
+      }
+    ],
+    errors: [
+      {
+        key: "case",
+        name: "漏掉「下方」第二种情况",
+        pct: { school: 51, c3: 56, c5: 45 },
+        students: {
+          c3: [
+            { name: "黄景行", no: "06", detail: "只写了 45°" },
+            { name: "徐梦瑶", no: "09", detail: "只写了 45°" },
+            { name: "何俊杰", no: "19", detail: "未画下方情形" },
+            { name: "高诗涵", no: "25", detail: "只写了 45°" },
+            { name: "曹子涵", no: "12", detail: "分类不全" }
+          ],
+          c5: [
+            { name: "马天佑", no: "08", detail: "只写了 45°" },
+            { name: "林晓月", no: "16", detail: "分类不全" },
+            { name: "韩思琪", no: "19", detail: "只写了 45°" }
+          ],
+          school: [{ name: "跨班汇总", no: "—", detail: "过半错误卷漏分情况" }]
+        }
+      },
+      {
+        key: "dir",
+        name: "旋转方向画反",
+        pct: { school: 24, c3: 22, c5: 26 },
+        students: {
+          c3: [
+            { name: "邓雅琪", no: "28", detail: "顺/逆时针画反" },
+            { name: "周子墨", no: "22", detail: "方向标反" }
+          ],
+          c5: [{ name: "谢宇轩", no: "03", detail: "方向标反" }],
+          school: [{ name: "跨班汇总", no: "—", detail: "约占错误的 24%" }]
+        }
+      }
+    ],
+    tip: {
+      school: "最大失分点是漏分情况，讲评可投影典型卷。",
+      c3: "本班 5 人漏写下方情形，建议下周专题补「分类讨论」。",
+      c5: "本班好于本校，仍有 3 人漏分情况。"
+    }
+  },
+  {
+    id: 6,
+    filter: ["base"],
+    origin: "collect",
+    source: "从飞象选入 · 课时作业",
+    paperLink: "校本试卷首页.html",
+    type: "填空题",
+    diff: "较易",
+    level: "基础层",
+    body: "计算：合并同类项 <b>3x² − 5x + 2 − 7x² + 4x − 9</b> 的结果是 ____。",
+    kp: "合并同类项",
+    literacy: "运算能力",
+    cite: 3201,
+    span: "近3个秋季",
+    rates: {
+      school: { correct: 78, score: 76.5, years: [72, 75, 78] },
+      c3: { correct: 72, score: 70.0, years: [68, 70, 72] },
+      c5: { correct: 84, score: 82.0, years: [78, 81, 84] }
+    },
+    wrongSamples: [
+      {
+        ans: "一次项写成 +x 或 −9x",
+        why: "−5x 与 +4x 合并时符号出错。",
+        errorKey: "linear"
+      }
+    ],
+    errors: [
+      {
+        key: "linear",
+        name: "一次项符号合并错",
+        pct: { school: 52, c3: 55, c5: 48 },
+        students: {
+          c3: [
+            { name: "王浩然", no: "03", detail: "−5x+4x 算成 −9x" },
+            { name: "李思远", no: "11", detail: "算成 +x" },
+            { name: "赵一诺", no: "15", detail: "算成 −9x" }
+          ],
+          c5: [
+            { name: "刘子轩", no: "05", detail: "算成 +x" },
+            { name: "郑浩宇", no: "21", detail: "算成 −9x" }
+          ],
+          school: [{ name: "跨班汇总", no: "—", detail: "一次项符号是最高频错因" }]
+        }
+      },
+      {
+        key: "const",
+        name: "常数项漏算",
+        pct: { school: 28, c3: 30, c5: 25 },
+        students: {
+          c3: [
+            { name: "陈雨桐", no: "18", detail: "漏了 −9" },
+            { name: "吴佳怡", no: "27", detail: "常数项未合并" }
+          ],
+          c5: [{ name: "孙语桐", no: "14", detail: "漏了 −9" }],
+          school: [{ name: "跨班汇总", no: "—", detail: "约占错误的 28%" }]
+        }
+      }
+    ],
+    tip: {
+      school: "正确率稳定，适合新授课随堂练。",
+      c3: "本班仍有 3 人一次项符号错，可作学困补偿。",
+      c5: "本班掌握扎实，可快速过关。"
+    }
+  }
+];
+
+function scopeLabel() {
+  return scopes[currentScope].label;
+}
+
+function openDrawer({ title, sub, summary, groups, actions }) {
+  document.getElementById("drawerTitle").textContent = title;
+  document.getElementById("drawerSub").textContent = sub;
+  const body = document.getElementById("drawerBody");
+  body.innerHTML = `
+    <div class="stu-summary">
+      ${summary.map(s => `<div class="box"><div class="k">${s.k}</div><div class="v">${s.v}</div></div>`).join("")}
+    </div>
+    ${groups.map(g => `
+      <div class="stu-group">
+        <h4>${g.title}</h4>
+        <div class="stu-list">
+          ${g.students.map(s => `
+            <div class="stu">
+              <div class="avatar">${s.name.slice(0, 1)}</div>
+              <div class="info">
+                <div class="name">${s.name}${s.no && s.no !== "—" ? ` · ${s.no}号` : ""}</div>
+                <div class="detail">${s.detail}</div>
+              </div>
+              <button class="act">看原卷</button>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `).join("")}
+  `;
+  document.getElementById("drawerMask").classList.add("show");
+  document.getElementById("drawer").classList.add("show");
+}
+
+function closeDrawer() {
+  document.getElementById("drawerMask").classList.remove("show");
+  document.getElementById("drawer").classList.remove("show");
+}
+
+function openErrorStudents(q, error) {
+  const list = error.students[currentScope] || error.students.school;
+  const scopeName = scopeLabel();
+  openDrawer({
+    title: error.name,
+    sub: `${scopeName} · ${q.kp} · 第题「${q.type}」`,
+    summary: [
+      { k: "涉及学生", v: `${list.length} 人` },
+      { k: "占错误比", v: `${error.pct[currentScope]}%` },
+      { k: scopeName + "正确率", v: `${q.rates[currentScope].correct}%` }
+    ],
+    groups: [
+      {
+        title: currentScope === "school" ? "年级汇总说明" : `${scopeName} · 需关注学生`,
+        students: list
+      }
+    ]
+  });
+}
+
+function openClassOverview(q) {
+  const rate = q.rates[currentScope];
+  const topError = q.errors[0];
+  const list = topError.students[currentScope] || topError.students.school;
+  openDrawer({
+    title: `${scopeLabel()} · 本题学情`,
+    sub: q.body.replace(/<[^>]+>/g, "").slice(0, 42) + "…",
+    summary: [
+      { k: "正确率", v: `${rate.correct}%` },
+      { k: "得分率", v: `${rate.score}%` },
+      { k: "待关注", v: `${list.length} 人` }
+    ],
+    groups: [
+      {
+        title: `最高频错因：${topError.name}`,
+        students: list
+      }
+    ]
+  });
+}
+
+function renderList() {
+  const list = document.getElementById("qlist");
+  let data = currentFilter === "all"
+    ? questions
+    : questions.filter(q => q.filter.includes(currentFilter));
+  if (currentOrigin !== "all") {
+    data = data.filter(q => q.origin === currentOrigin);
+  }
+
+  if (!data.length) {
+    list.innerHTML = `<div style="padding:48px 20px;text-align:center;color:var(--ink-3);font-size:13px;background:#fff;border:1px solid var(--line);border-radius:var(--radius)">当前筛选下暂无题目，可切换题源或推荐标签后再试。</div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(q => {
+    const rate = q.rates[currentScope];
+    const schoolRate = q.rates.school;
+    const tip = q.tip[currentScope];
+    const scopeName = scopeLabel();
+    const isClass = currentScope !== "school";
+    const paperHref = q.paperLink || "校本试卷首页.html";
+    const origin = ORIGIN_META[q.origin] || ORIGIN_META.deposit;
+
+    return `
+    <article class="qcard" data-id="${q.id}" data-origin="${origin.key}">
+      <div class="q-top">
+        <span class="tag">${q.type}</span>
+        <span class="tag">${q.diff}</span>
+        <span class="tag">${q.level}</span>
+        <div class="q-top-right">
+          <span class="origin-badge ${origin.key}" title="${origin.tip}">${origin.badge}</span>
+          <a class="q-src" href="${paperHref}" title="打开来源试卷">${q.source} →</a>
+        </div>
+      </div>
+      <div class="q-body">${q.body}</div>
+      <div class="q-meta">
+        <span>知识点：<b>${q.kp}</b></span>
+        <span>核心素养：<b>${q.literacy}</b></span>
+      </div>
+      ${(() => {
+        const rec = AI_REC[q.id] || { tag: "适合巩固", cls: "mid", text: "建议选用：结合本校学情，本题可作为本章练习补充。" };
+        return `<div class="ai-rec">
+          <span class="ai-rec-tag ${rec.cls}">${rec.tag}</span>
+          <div class="ai-rec-body">${rec.text}</div>
+        </div>`;
+      })()}
+      <div class="xueqing">
+        <div class="xq-row">
+          <div class="xq-item">
+            <div class="k">本校今年</div>
+            <div class="v">${schoolRate.correct}%</div>
+          </div>
+          <div class="xq-item clickable" data-act="class-overview">
+            <div class="k">${isClass ? "本班本学年" : "本校今年"}</div>
+            <div class="v">${rate.correct}%${isClass ? `<span class="gap ${rate.correct - schoolRate.correct >= 0 ? "up" : "down"}" style="font-size:12px;font-weight:600;margin-left:6px">${rate.correct - schoolRate.correct >= 0 ? "较本校今年 +" : "较本校今年 "}${rate.correct - schoolRate.correct}</span>` : ""}<span class="linkish">看学生 →</span></div>
+          </div>
+          <div class="xq-item xq-deep">
+            <div class="k">得分率</div>
+            <div class="v">${rate.score}%</div>
+          </div>
+          <div class="xq-item xq-deep">
+            <div class="k">适用层次</div>
+            <div class="v" style="font-size:13px">${q.level}</div>
+          </div>
+        </div>
+        <div class="xq-more">
+          <span class="xq-tip">${tip}</span>
+          <button class="xq-toggle" type="button">展开典型错误作答</button>
+        </div>
+        <div class="xq-detail">
+          <div class="xq-block">
+            <h4>典型错误作答（${scopeName}${isClass ? " · 本学年" : ""}）</h4>
+            ${q.wrongSamples.map(w => {
+              const err = q.errors.find(e => e.key === w.errorKey) || q.errors[0];
+              const n = (err.students[currentScope] || []).length;
+              return `
+              <div class="wrong-sample">
+                <div class="label">高频错答</div>
+                <div class="ans">${w.ans}</div>
+                <div class="why">${w.why}</div>
+                <div class="who" data-act="error" data-err="${err.key}">
+                  ${isClass ? `本班 ${n} 人犯此错 · 查看名单 →` : `查看年级涉及学生 →`}
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
+          <div class="xq-block">
+            <h4>错因分布 · 点击可看学生</h4>
+            ${q.errors.map(e => `
+              <div class="err-bar">
+                <button class="name-btn" data-act="error" data-err="${e.key}">${e.name}</button>
+                <div class="bar"><span style="width:${e.pct[currentScope]}%"></span></div>
+                <span class="pct">${e.pct[currentScope]}%</span>
+              </div>
+            `).join("")}
+            <h4 style="margin-top:12px">${isClass ? "全校近 3 年走势（对照今年）" : "本校近 3 年走势（仅秋季）"}</h4>
+            <div class="spark">${(isClass ? schoolRate.years : rate.years).map((y, i, arr) => `<i style="height:${y}%;opacity:${i === arr.length - 1 ? 1 : 0.55}"></i>`).join("")}</div>
+            <div class="spark-labels"><span>23秋</span><span>24秋</span><span>25秋</span></div>
+            ${isClass ? `<p style="margin:8px 0 0;font-size:12px;color:var(--ink-3)">本班仅统计本学年；上图为全校近 3 秋，便于对照本校今年水平。</p>` : ""}
+          </div>
+        </div>
+      </div>
+      <div class="tool-panel" data-tool="variant">
+        <h4>生成变式题</h4>
+        <div class="opts">
+          <button class="tool-opt on" data-opt="num">更换数值</button>
+          <button class="tool-opt" data-opt="ctx">更换情境</button>
+          <button class="tool-opt" data-opt="up">升一档难度</button>
+        </div>
+        <div class="tool-result" data-role="result">
+          <div class="label">预览</div>
+          <div data-role="preview">点击下方「生成」查看变式题</div>
+        </div>
+        <div class="tool-actions">
+          <button class="ghost-btn" data-role="close">收起</button>
+          <button class="primary" data-role="gen">生成变式</button>
+          <button class="primary" data-role="add" style="display:none">加入试题篮</button>
+        </div>
+      </div>
+      <div class="tool-panel" data-tool="ai">
+        <h4>AI 改编本题</h4>
+        <div class="opts">
+          <button class="tool-opt on" data-opt="easy">降低难度</button>
+          <button class="tool-opt" data-opt="hard">提高难度</button>
+          <button class="tool-opt" data-opt="step">改为分步设问</button>
+          <button class="tool-opt" data-opt="choice">改为选择题</button>
+        </div>
+        <div class="tool-result" data-role="result">
+          <div class="label">改编预览</div>
+          <div data-role="preview">选择改编方式后点击「开始改编」</div>
+        </div>
+        <div class="tool-actions">
+          <button class="ghost-btn" data-role="close">收起</button>
+          <button class="primary" data-role="gen">开始改编</button>
+          <button class="primary" data-role="add" style="display:none">加入试题篮</button>
+        </div>
+      </div>
+      <div class="q-actions">
+        <div class="q-act-left">
+          <button type="button" class="ghost">解析</button>
+          <button type="button" class="ghost">相似题</button>
+        </div>
+        <div class="q-act-right">
+          <button type="button" class="ghost accent" data-tool-open="ai">AI改编</button>
+          <button type="button" class="ghost accent" data-tool-open="variant" data-preset="error">生成变式</button>
+          <button type="button" class="btn-add" data-act-add>加入作业</button>
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+
+  list.querySelectorAll(".xq-toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".qcard");
+      card.classList.toggle("expanded");
+      btn.textContent = card.classList.contains("expanded") ? "收起" : "展开典型错误作答";
+    });
+  });
+
+  list.querySelectorAll("[data-act]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const card = el.closest(".qcard");
+      const q = questions.find(item => item.id === Number(card.dataset.id));
+      if (el.dataset.act === "class-overview") {
+        openClassOverview(q);
+      } else if (el.dataset.act === "error") {
+        const err = q.errors.find(item => item.key === el.dataset.err);
+        openErrorStudents(q, err);
+      }
+    });
+  });
+
+  bindToolPanels(list);
+
+  list.querySelectorAll("[data-act-add]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      alert("已加入本次作业（演示）");
+    });
+  });
+}
+
+
+
+const VARIANT_DEMO = {
+  num: {
+    "1": "当 <b>a = −3，b = 2</b> 时，代数式 <b>2a² − 3ab + b²</b> 的值为 ____。",
+    "2": "如图，将半圆绕直径所在虚线旋转一周，得到的立体图形是（　）<span style='color:var(--ink-3)'>（数值情境不变，图形标注略有调整）</span>",
+    default: "已将原题关键数据替换为同结构新数值，考查点不变。"
+  },
+  ctx: {
+    "1": "某次实验测得 a = −2，b = 3，求代数式 2a² − 3ab + b² 的值。",
+    default: "已将题干改为生活/实验情境，知识点与难度保持一致。"
+  },
+  up: {
+    "1": "当 a = −2，b = 3 时，先求 2a² − 3ab + b² 的值；若将 a 换成 −a，结果如何变化？",
+    default: "在原题基础上增加追问或条件变化，难度提升一档。"
+  }
+};
+
+const AI_DEMO = {
+  easy: {
+    "1": "当 a = 2，b = 3 时，代数式 2a² + 3ab + b² 的值为 ____。<div style='margin-top:6px;font-size:12px;color:var(--ink-3)'>AI：去掉负号干扰，先巩固平方与合并运算。</div>",
+    default: "AI 已降低符号与运算干扰，保留核心知识点。"
+  },
+  hard: {
+    "1": "已知 a + b = 1，ab = −6，求 2a² − 3ab + b² 的值。<div style='margin-top:6px;font-size:12px;color:var(--ink-3)'>AI：改为用对称式变形求解，提升综合度。</div>",
+    default: "AI 已增加条件转化与综合运算要求。"
+  },
+  step: {
+    "1": "（1）当 a=−2，b=3 时，计算 a² 与 ab；<br>（2）求 2a² − 3ab + b² 的值。<div style='margin-top:6px;font-size:12px;color:var(--ink-3)'>AI：拆成两步，降低一次得分门槛。</div>",
+    default: "AI 已拆分为分步设问，便于分层给分。"
+  },
+  choice: {
+    "1": "当 a=−2，b=3 时，2a²−3ab+b² 的值为（　）<br>A. 35　B. −17　C. 17　D. −1<div style='margin-top:6px;font-size:12px;color:var(--ink-3)'>AI：选项植入本班高频错答 −17 / −1。</div>",
+    default: "AI 已改编为选择题，干扰项来自典型错因。"
+  }
+};
+
+function bindToolPanels(list) {
+  list.querySelectorAll("[data-tool-open]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".qcard");
+      const tool = btn.dataset.toolOpen;
+      const panel = card.querySelector(`.tool-panel[data-tool="${tool}"]`);
+      const other = card.querySelector(`.tool-panel[data-tool="${tool === "variant" ? "ai" : "variant"}"]`);
+      if (other) other.classList.remove("show");
+      const opening = !panel.classList.contains("show");
+      card.querySelectorAll(".tool-panel").forEach(p => p.classList.remove("show"));
+      if (opening) {
+        panel.classList.add("show");
+        card.classList.add("tool-open");
+        const preset = btn.dataset.preset;
+        if (preset) {
+          panel.querySelectorAll(".tool-opt").forEach(o => o.classList.toggle("on", o.dataset.opt === preset || (preset === "error" && o.dataset.opt === "num")));
+          if (preset === "error") {
+            const first = panel.querySelector('.tool-opt[data-opt="num"]');
+            if (first) {
+              panel.querySelectorAll(".tool-opt").forEach(o => o.classList.remove("on"));
+              first.classList.add("on");
+              first.textContent = "同错因变式";
+            }
+          }
+        }
+      } else {
+        card.classList.remove("tool-open");
+      }
+    });
+  });
+
+  list.querySelectorAll(".tool-panel").forEach(panel => {
+    const tool = panel.dataset.tool;
+    panel.querySelectorAll(".tool-opt").forEach(opt => {
+      opt.addEventListener("click", () => {
+        panel.querySelectorAll(".tool-opt").forEach(o => o.classList.remove("on"));
+        opt.classList.add("on");
+      });
+    });
+    panel.querySelector('[data-role="close"]').addEventListener("click", () => {
+      panel.classList.remove("show");
+      panel.closest(".qcard").classList.remove("tool-open");
+    });
+    panel.querySelector('[data-role="gen"]').addEventListener("click", () => {
+      const card = panel.closest(".qcard");
+      const qid = String(card.dataset.id);
+      const opt = panel.querySelector(".tool-opt.on")?.dataset.opt;
+      const preview = panel.querySelector('[data-role="preview"]');
+      const addBtn = panel.querySelector('[data-role="add"]');
+      preview.innerHTML = `<span class="tool-loading">生成中…</span>`;
+      addBtn.style.display = "none";
+      setTimeout(() => {
+        const pack = tool === "variant" ? VARIANT_DEMO : AI_DEMO;
+        const map = pack[opt] || {};
+        preview.innerHTML = map[qid] || map.default || "已生成预览（演示）";
+        addBtn.style.display = "";
+      }, 450);
+    });
+    panel.querySelector('[data-role="add"]').addEventListener("click", () => {
+      alert(tool === "variant" ? "变式题已加入试题篮（演示）" : "AI 改编题已加入试题篮（演示）");
+    });
+  });
+}
+
+function applyScope() {
+  const s = scopes[currentScope];
+  const isClass = s.isClass;
+  const histGap = s.schoolHistGap;
+  const histGapText = histGap > 0 ? `较近3年 +${histGap}` : histGap < 0 ? `较近3年 ${histGap}` : `与近3年持平`;
+  const histGapClass = histGap > 0 ? "up" : histGap < 0 ? "down" : "flat";
+
+  document.getElementById("dashRateLabel").textContent = isClass ? "本班正确率" : "本校正确率";
+  document.getElementById("dashCorrect").textContent = s.chapterCorrect + "%";
+  const gapEl = document.getElementById("dashGap");
+  gapEl.textContent = s.gapText;
+  gapEl.className = "gap " + s.gapClass;
+  gapEl.style.display = isClass ? "inline-block" : "none";
+  document.getElementById("dashRateSub").textContent = s.rateSub;
+  document.getElementById("dashScore").textContent = s.chapterScore + "%";
+  document.getElementById("dashScoreSub").textContent = s.scoreSub;
+
+  document.getElementById("dashSchoolNow").textContent = s.schoolThisYear + "%";
+  const schoolGapEl = document.getElementById("dashSchoolGap");
+  schoolGapEl.textContent = histGapText;
+  schoolGapEl.className = "gap " + histGapClass;
+  document.getElementById("dashSchoolHistSub").textContent = `近3秋均值 ${s.schoolAvg3}%`;
+
+  document.getElementById("dashWatchLabel").textContent = s.watchLabel;
+  document.getElementById("dashWatch").textContent = s.watchDisplay;
+  document.getElementById("dashScopeHint").textContent = s.hint;
+
+  document.getElementById("chapterModalSub").textContent = s.modalSub;
+  document.getElementById("modalTip").textContent = s.tip;
+  document.getElementById("modalSpark").innerHTML =
+    s.schoolSpark.map((v, i) => `<i style="height:${v}%;opacity:${i === s.schoolSpark.length - 1 ? 1 : 0.55}"></i>`).join("");
+  document.getElementById("modalSchoolHistNote").innerHTML =
+    `全校今年 <b>${s.schoolThisYear}%</b>，近 3 秋均值 <b>${s.schoolAvg3}%</b>，较近 3 年 <b style="color:${histGap >= 0 ? '#2f6b3a' : '#c45600'}">${histGap > 0 ? '+' : ''}${histGap}</b> 个百分点。`;
+
+  const classCompare = document.getElementById("modalClassCompare");
+  if (isClass) {
+    classCompare.style.display = "";
+    document.getElementById("modalClassRate").textContent = s.chapterCorrect + "%";
+    document.getElementById("modalSchoolYear").textContent = s.schoolThisYear + "%";
+    const classGap = s.chapterCorrect - s.schoolThisYear;
+    const gapNode = document.getElementById("modalClassGap");
+    gapNode.textContent = (classGap > 0 ? "+" : "") + classGap;
+    gapNode.style.color = classGap >= 0 ? "#2f6b3a" : "#c45600";
+    document.getElementById("modalErrScope").textContent = "本班本学年";
+    document.getElementById("modalWeakScope").textContent = "本班本学年";
+    document.getElementById("modalLevelScope").textContent = "本学年";
+    document.getElementById("modalSparkTitle").innerHTML = '全校近 3 年正确率走势<span class="sub">仅秋季 · 对照今年</span>';
+  } else {
+    classCompare.style.display = "none";
+    document.getElementById("modalErrScope").textContent = "本校本学年";
+    document.getElementById("modalWeakScope").textContent = "本校本学年";
+    document.getElementById("modalLevelScope").textContent = "本学年";
+    document.getElementById("modalSparkTitle").innerHTML = '本校近 3 年正确率走势<span class="sub">仅秋季 · 对照今年</span>';
+  }
+
+  document.getElementById("modalWeak").innerHTML = s.weak.map(w =>
+    `<div class="weak-item"><span class="name">${w.name}</span><span class="val">${w.val}</span></div>`
+  ).join("");
+  document.getElementById("modalErrors").innerHTML = s.errors.map(e =>
+    `<div class="err-bar"><span style="width:72px">${e.name}</span><div class="bar"><span style="width:${e.pct}%"></span></div><span class="pct">${e.pct}%</span></div>`
+  ).join("");
+  document.getElementById("lvBase").textContent = s.levels.base + "%";
+  document.getElementById("lvUp").textContent = s.levels.up + "%";
+  document.getElementById("lvTop").textContent = s.levels.top + "%";
+  document.getElementById("lvBaseBar").style.width = s.levels.base + "%";
+  document.getElementById("lvUpBar").style.width = s.levels.up + "%";
+  document.getElementById("lvTopBar").style.width = s.levels.top + "%";
+
+  document.getElementById("smartHint").textContent = "第三章 · " + s.label + " · 本学年";
+  document.getElementById("sortLabel").textContent =
+    isClass ? "本班正确率↑" : "本校正确率↑";
+
+  const diag = AI_DIAG[currentScope];
+  document.getElementById("aiDiagText").innerHTML = diag.summary;
+  document.getElementById("aiWeakPoints").textContent = diag.weak;
+  document.getElementById("aiPath").textContent = diag.path;
+  document.getElementById("aiPlan").textContent = diag.plan;
+  document.getElementById("basketAdvice").innerHTML = isClass
+    ? '<b>质检建议：</b>当前组题偏基础，建议补充 1 道提高层题，覆盖「去括号」薄弱点。'
+    : '<b>质检建议：</b>当前组题覆盖面偏窄，建议补充 1 道易错母题，覆盖「代入后符号处理」。';
+
+  renderList();
+}
+
+function setViewMode(mode) {
+  viewMode = mode;
+  document.body.classList.toggle("prep-mode", mode === "prep");
+  document.body.classList.toggle("deep-mode", mode === "deep");
+  document.querySelectorAll(".view-mode button").forEach(b => {
+    b.classList.toggle("on", b.dataset.view === mode);
+  });
+}
+
+function openChapterModal() {
+  document.getElementById("chapterModalMask").classList.add("show");
+  document.getElementById("chapterModal").classList.add("show");
+}
+function closeChapterModal() {
+  document.getElementById("chapterModalMask").classList.remove("show");
+  document.getElementById("chapterModal").classList.remove("show");
+}
+function openReportModal() {
+  document.getElementById("reportModalMask").classList.add("show");
+  document.getElementById("reportModal").classList.add("show");
+}
+function closeReportModal() {
+  document.getElementById("reportModalMask").classList.remove("show");
+  document.getElementById("reportModal").classList.remove("show");
+}
+
+document.querySelectorAll(".view-mode button").forEach(btn => {
+  btn.addEventListener("click", () => setViewMode(btn.dataset.view));
+});
+
+document.querySelectorAll(".scope-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".scope-btn").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    currentScope = btn.dataset.scope;
+    applyScope();
+  });
+});
+
+document.querySelectorAll(".smart-bar .pill").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".smart-bar .pill").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    currentFilter = btn.dataset.filter;
+    renderList();
+  });
+});
+
+document.querySelectorAll(".filters .chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const group = chip.parentElement;
+    group.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+    chip.classList.add("on");
+    if (group.classList.contains("fg-origin")) {
+      currentOrigin = chip.dataset.origin || "all";
+      renderList();
+    }
+  });
+});
+
+document.querySelectorAll(".sort button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".sort button").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+  });
+});
+
+document.getElementById("modeChapter").addEventListener("click", () => {
+  document.getElementById("modeChapter").classList.add("on");
+  document.getElementById("modeKnowledge").classList.remove("on");
+  document.getElementById("chapterTree").style.display = "";
+  document.getElementById("knowledgeTree").style.display = "none";
+});
+document.getElementById("modeKnowledge").addEventListener("click", () => {
+  document.getElementById("modeKnowledge").classList.add("on");
+  document.getElementById("modeChapter").classList.remove("on");
+  document.getElementById("chapterTree").style.display = "none";
+  document.getElementById("knowledgeTree").style.display = "";
+});
+
+document.querySelectorAll(".sec").forEach(sec => {
+  sec.addEventListener("click", () => {
+    sec.closest(".tree").querySelectorAll(".sec").forEach(s => s.classList.remove("active"));
+    sec.classList.add("active");
+  });
+});
+
+document.getElementById("drawerClose").addEventListener("click", closeDrawer);
+document.getElementById("drawerMask").addEventListener("click", closeDrawer);
+document.getElementById("drawerAssign").addEventListener("click", () => {
+  alert("已为名单中的学生推送针对性变式练习（演示）");
+  closeDrawer();
+});
+document.getElementById("drawerExport").addEventListener("click", () => {
+  alert("已导出学生名单（演示）");
+});
+
+document.getElementById("btnChapterDetail").addEventListener("click", openChapterModal);
+document.getElementById("chapterModalClose").addEventListener("click", closeChapterModal);
+document.getElementById("chapterModalMask").addEventListener("click", closeChapterModal);
+document.getElementById("chapterModalOk").addEventListener("click", closeChapterModal);
+
+document.getElementById("reportModalClose").addEventListener("click", closeReportModal);
+document.getElementById("reportModalMask").addEventListener("click", closeReportModal);
+document.getElementById("reportModalOk").addEventListener("click", closeReportModal);
+
+document.getElementById("btnCompose").addEventListener("click", () => {
+  document.getElementById("hwPanel").classList.toggle("show");
+});
+document.getElementById("hwCancel").addEventListener("click", () => {
+  document.getElementById("hwPanel").classList.remove("show");
+});
+document.getElementById("hwConfirm").addEventListener("click", () => {
+  const hw = document.querySelector(".hw-opt.on")?.dataset.hw || "error";
+  const names = { base: "基础巩固版", mid: "临界提分版", error: "错因补救版", weekend: "周末作业版", sprint: "考前冲刺版" };
+  alert(`已生成「${names[hw]}」校本作业（演示）\\n\\n已按 AI 诊断自动配比基础/提高/冲刺题量。`);
+  document.getElementById("hwPanel").classList.remove("show");
+});
+document.querySelectorAll(".hw-opt").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".hw-opt").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+  });
+});
+document.getElementById("btnReport").addEventListener("click", (e) => {
+  e.preventDefault();
+  openReportModal();
+});
+document.querySelectorAll("[data-ai-act]").forEach(card => {
+  card.addEventListener("click", () => {
+    const act = card.dataset.aiAct;
+    if (act === "plan") {
+      document.getElementById("hwPanel").classList.add("show");
+    } else if (act === "weak" || act === "path") {
+      document.querySelector('.smart-bar .pill[data-filter="weak"]').click();
+    }
+  });
+});
+
+setViewMode("prep");
+applyScope();
+
+requestAnimationFrame(() => {
+  const el = document.getElementById("currentChapter");
+  if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
+});
+</script>
+</body>
+</html>
